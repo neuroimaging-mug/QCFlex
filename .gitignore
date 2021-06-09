@@ -1,0 +1,16 @@
+
+QCMasterGUI/__pycache__/
+
+QCMasterGUI/widgets/__pycache__/
+
+venv/
+
+widgets/__pycache__/
+
+main.pyproject.user
+
+.idea/
+
+__pycache__/
+
+build/
