@@ -7,12 +7,25 @@ from pathlib import Path
 import numpy as np
 from PIL import Image, ImageDraw
 from PyQt5 import uic
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtCore import pyqtSignal, pyqtSlot, Qt, QTimer
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
 from widgets.MplWidget import MplCanvas
 from widgets.QCPandasTableWidget import *
 from widgets.QCTableViewWidget import QCTableView
+
+import pandas as pd
+
+"""
+Name    : main.py
+Author  : Stefan Eggenreich
+Contact : stefan.eggenreich@gmail.com
+TIME    : 19.07.2021 20:08
+Desc    : 
+"""
+
 
 QC_STATUS_FAIL = 0
 QC_STATUS_PASS = 1
