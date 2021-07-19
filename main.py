@@ -33,6 +33,7 @@ BTN_DEFAULT_STYLESHEET = "color: white; background:rgb(60, 63, 65);"
 BTN_PASS_STYLESHEET = "color: black; background-color: green;"
 BTN_FAIL_STYLESHEET = "color: white; background-color: red;"
 DELAY = 100  # msec to wait after pass/fail was clicked
+REQUIRED_TABLE_COLUMNS = ['PatientID', 'imgpath', 'QC', 'comment']
 
 
 class QCMainWindow(QMainWindow):
@@ -205,6 +206,28 @@ class QCMainWindow(QMainWindow):
         self.activeIdLabel.setText(id)
 
 
+
+def loadTableFile(fpath: Path):
+    '''
+    Loads the table provided with the filepath and perform check if PatientID is found in the headers.
+    (Fallback to 1th row for subject id)
+    :param fpath: Source path for the table (csv) to be loaded
+    :return:
+    '''
+    try:
+        filepath = fpath
+        df = pd.read_csv(filepath, sep=';', decimal=',', header=0)
+
+        if "PatientID" not in df.columns.values:
+            # If PatientID is not found in headers, select the 1th row as Patient Identifier!
+            new_header = list(df.columns.values)
+            new_header[0] = "PatientID"
+            df.columns = new_header
+        return df
+
+    except ValueError:
+        return None
+
 class ScatterView(QMainWindow):
     sendIndexClickedOn = pyqtSignal(int)
     receiveCurrentIndex = pyqtSignal(int)
@@ -219,16 +242,7 @@ class ScatterView(QMainWindow):
         layout = QVBoxLayout()
         cw.setLayout(layout)
 
-        def loadTableFile(fname: Path):
-            try:
-                filepath = fname
-                df = pd.read_csv(filepath, sep=';', decimal=',')
-                new_header = df.iloc[0]
-                df.colums = new_header
-                return df
 
-            except ValueError:
-                return None
 
         self.df = loadTableFile(self.parent.table_filename)
 
@@ -328,7 +342,7 @@ class TableViewWindow(QMainWindow):
 
     @staticmethod
     def evaluateProvidedTable(fname):
-        out = TableViewWindow.loadTableFile(fname)
+        out = loadTableFile(fname)
         if isinstance(out, pd.DataFrame):
             print("Building Table Window!")
             return True
@@ -368,18 +382,6 @@ class TableViewWindow(QMainWindow):
 
         print(f"Selected row: {row_index}")
 
-    # TODO remove redundant function!
-    def loadTableFile(fname: Path):
-        try:
-            filepath = fname
-            df = pd.read_csv(filepath, sep=';', decimal='.')
-            new_header = df.iloc[0]
-            df.colums = new_header
-            return df
-
-        except ValueError:
-            return None
-
     def setupUi(self, test):
         test.setObjectName("test")
         test.resize(800, 600)
@@ -400,7 +402,7 @@ class TableViewWindow(QMainWindow):
         palette.setColor(QPalette.Inactive, QPalette.HighlightedText, Qt.white)
         self.data.setPalette(palette)
 
-        self.df = TableViewWindow.loadTableFile(self.table_filename)
+        self.df = loadTableFile(self.table_filename)
 
         self.model = PandasTableModel(self.df)
         self.data.setModel(self.model)
@@ -418,7 +420,7 @@ class TableViewWindow(QMainWindow):
         headers = model.getHeaders()
         data_array = dict()
 
-        for key in ['PatientID', 'imgpath', 'QC', 'comment']:
+        for key in REQUIRED_TABLE_COLUMNS:
             path_idx = list(headers).index(key)
             model_idx = model.index(sel_rows.row(), path_idx)
             selected_data = model.data(model_idx)
