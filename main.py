@@ -1,3 +1,11 @@
+"""
+Name    : main.py
+Author  : Stefan Eggenreich
+Contact : stefan.eggenreich@gmail.com
+TIME    : 19.07.2021 20:08
+Desc    :
+"""
+
 import datetime
 import os
 import sys
@@ -10,33 +18,16 @@ from PyQt5 import uic
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, Qt, QTimer
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
-from widgets.MplWidget import MplCanvas
-from widgets.QCPandasTableWidget import *
-from widgets.QCTableViewWidget import QCTableView
-
+from ScatterView import ScatterView
 import pandas as pd
+from settings import *
+from TableViewWindow import TableViewWindow
 
-"""
-Name    : main.py
-Author  : Stefan Eggenreich
-Contact : stefan.eggenreich@gmail.com
-TIME    : 19.07.2021 20:08
-Desc    : 
-"""
-
-
-QC_STATUS_FAIL = 0
-QC_STATUS_PASS = 1
-BTN_DEFAULT_STYLESHEET = "color: white; background:rgb(60, 63, 65);"
-BTN_PASS_STYLESHEET = "color: black; background-color: green;"
-BTN_FAIL_STYLESHEET = "color: white; background-color: red;"
-DELAY = 100  # msec to wait after pass/fail was clicked
-REQUIRED_TABLE_COLUMNS = ['PatientID', 'imgpath', 'QC', 'comment']
-
+from utils import evaluateProvidedTable
 
 class QCMainWindow(QMainWindow):
+
     evaluateProvidedTable = pyqtSignal(Path)
 
     def __init__(self):
@@ -53,15 +44,45 @@ class QCMainWindow(QMainWindow):
         self.show()
 
     def initMenuBarLoadActions(self):
+        """
+        Connects buttons from the menu bar related to loading files
+        :return:
+        """
         self.actionLoad_File.triggered.connect(self.loadFile)
 
     def initMenuBarSaveActions(self):
+        """
+        Connects buttons from the menu bar related to saving
+        :return:
+        """
         self.actionSave.triggered.connect(self.table.tableSaveEvent)
         self.actionSave.setEnabled(True)
         self.actionSave_As.triggered.connect(self.table.tableSaveAsEvent)
         self.actionSave_As.setEnabled(True)
 
+    def initButtonConnections(self):
+        """
+        Conntects all buttons with the correct functionality
+        :return:
+        """
+        self.passBtn.clicked.connect(self.clickedPassFail)
+        self.passBtn.setShortcut(Qt.Key_Space)
+        self.failBtn.clicked.connect(self.clickedPassFail)
+        self.failBtn.setShortcut(Qt.Key_F)
+        self.previousBtn.clicked.connect(self.table.getPreviousId)
+        self.previousBtn.setShortcut(Qt.Key_Left)
+        self.nextBtn.clicked.connect(self.table.getNextId)
+        self.nextBtn.setShortcut(Qt.Key_Right)
+
+        self.updateComment.clicked.connect(self.sendUpdate)
+
+        self.table.data.doubleClicked.connect(self.table.doubleClicked_table)
+
     def loadFile(self):
+        """
+        Load the selected table file selected by the use in the interactive file explorer
+        :return:
+        """
         dlg = QFileDialog()
         dlg.setNameFilters(["CSV files (*.csv)"])
         filenames = []
@@ -72,6 +93,11 @@ class QCMainWindow(QMainWindow):
         self.testFile(filenames[0])
 
     def testFile(self, text=None):
+        """
+        Tests the loaded table file to contain the correct columns
+        :param text:
+        :return:
+        """
         if hasattr(self, 'table'):
             print("Table already loaded!")
             return
@@ -82,7 +108,7 @@ class QCMainWindow(QMainWindow):
             print("Clicked Load!")
             fpath = text
 
-        if TableViewWindow.evaluateProvidedTable(fpath):
+        if evaluateProvidedTable(fpath):
             self.image_basepath = Path(fpath).parents[0]
 
             self.imageView.setLoadedId.connect(self.setLoadedId)
@@ -107,6 +133,10 @@ class QCMainWindow(QMainWindow):
             msg.exec_()
 
     def updateCurrentImage(self):
+        """
+        Update the currently displayed graph after an update by the backend
+        :return:
+        """
         self.current_data = self.table.getSelectedRowData()
         fpath = Path(self.current_data['imgpath'])
         if not fpath.is_absolute():
@@ -149,21 +179,12 @@ class QCMainWindow(QMainWindow):
 
             self.imageView.setImage(tmp_image_path)
 
-    def initButtonConnections(self):
-        self.passBtn.clicked.connect(self.clickedPassFail)
-        self.passBtn.setShortcut(Qt.Key_Space)
-        self.failBtn.clicked.connect(self.clickedPassFail)
-        self.failBtn.setShortcut(Qt.Key_F)
-        self.previousBtn.clicked.connect(self.table.getPreviousId)
-        self.previousBtn.setShortcut(Qt.Key_Left)
-        self.nextBtn.clicked.connect(self.table.getNextId)
-        self.nextBtn.setShortcut(Qt.Key_Right)
-
-        self.updateComment.clicked.connect(self.sendUpdate)
-
-        self.table.data.doubleClicked.connect(self.table.doubleClicked_table)
 
     def clickedPassFail(self, ):
+        """
+        Method than handles the interaction with the PASS and FAIL buttons
+        :return:
+        """
         status = self.sender().text()
         if status == 'PASS':
             self.failBtn.setStyleSheet(BTN_DEFAULT_STYLESHEET)
@@ -181,6 +202,11 @@ class QCMainWindow(QMainWindow):
         self.previous_sender = self.sender()
 
     def sendUpdate(self, source=None):
+        """
+        Updated entry of the currently selected row in the table after user interaction
+        :param source:
+        :return:
+        """
         try:
             status = self.sender().text()
         except AttributeError:
@@ -197,288 +223,25 @@ class QCMainWindow(QMainWindow):
         self.table.updateQCEntry(status, self.commentBoxEdit.toPlainText().lower())
 
     def getNextId(self):
+        """
+        Selects the next table row when called
+        :return:
+        """
         rows = sorted(set(index.row() for index in
                           self.table.data.selectedIndexes()))
         for row in rows:
             print('Row %d is selected' % row)
 
     def setLoadedId(self, id):
+        """
+        Updated the selected table row when clicked
+        :param id:
+        :return:
+        """
         self.activeIdLabel.setText(id)
 
 
 
-def loadTableFile(fpath: Path):
-    '''
-    Loads the table provided with the filepath and perform check if PatientID is found in the headers.
-    (Fallback to 1th row for subject id)
-    :param fpath: Source path for the table (csv) to be loaded
-    :return:
-    '''
-    try:
-        filepath = fpath
-        df = pd.read_csv(filepath, sep=';', decimal=',', header=0)
-
-        if "PatientID" not in df.columns.values:
-            # If PatientID is not found in headers, select the 1th row as Patient Identifier!
-            new_header = list(df.columns.values)
-            new_header[0] = "PatientID"
-            df.columns = new_header
-        return df
-
-    except ValueError:
-        return None
-
-class ScatterView(QMainWindow):
-    sendIndexClickedOn = pyqtSignal(int)
-    receiveCurrentIndex = pyqtSignal(int)
-
-    def __init__(self, parent=None):
-        QMainWindow.__init__(self)
-        self.setWindowTitle("application main window")
-        self.parent = parent
-
-        cw = QWidget()
-
-        layout = QVBoxLayout()
-        cw.setLayout(layout)
-
-
-
-        self.df = loadTableFile(self.parent.table_filename)
-
-        self.c1 = MplCanvas(self, width=5, height=4, dpi=100)
-        self.c1.transmit_data_index.connect(self.onForwardDataClickedOn)
-
-        layout.addWidget(self.c1)
-
-        navi_toolbar = NavigationToolbar(self.c1, self)
-        layout.addWidget(navi_toolbar)
-
-        self.valid_colums = self.evaluateValidColumns(self.df)
-
-        self.xdata_box = QComboBox()
-        self.xdata_box.addItems(list(self.valid_colums))
-        layout.addWidget(self.xdata_box)
-
-        self.ydata_box = QComboBox()
-        self.ydata_box.addItems(list(self.valid_colums))
-        layout.addWidget(self.ydata_box)
-
-        self.xdata_box.currentTextChanged.connect(self.updatePlotDataX)
-        self.ydata_box.currentTextChanged.connect(self.updatePlotDataY)
-
-        self.xdata_box.setCurrentIndex(1)
-        self.ydata_box.setCurrentIndex(1)
-
-        self.setCentralWidget(cw)
-
-    @pyqtSlot(int)
-    def onForwardDataClickedOn(self, index):
-        print(f"Got index {index}")
-        # update row selection
-        self.sendIndexClickedOn.emit(index)
-
-    def evaluateValidColumns(self, df):
-        columns = df.columns
-        valid_cols = []
-        for col in columns:
-            data = df[col].values
-            data = pd.to_numeric(data, errors='coerce')
-            if not np.isnan(data).all():
-                valid_cols.append(col)
-                df[col] = data
-        return valid_cols
-
-    def updatePlotDataX(self, new_column_name):
-        print("Init update of X-Axis!")
-
-        xlabel = new_column_name
-        ylabel = self.ydata_box.currentText()
-
-        x_sel = self.df[xlabel].values
-        y_sel = self.df[ylabel].values
-
-        self.c1.updatePlot(x_sel, y_sel, self.parent.current_index, xlabel=xlabel, ylabel=ylabel)
-
-    def updatePlotDataY(self, new_column_name):
-        print("Init update of Y-Axis!")
-
-        xlabel=self.xdata_box.currentText()
-        ylabel=new_column_name
-
-        x_sel = self.df[xlabel].values
-        y_sel = self.df[ylabel].values
-
-        self.c1.updatePlot(x_sel, y_sel, self.parent.current_index, xlabel=xlabel, ylabel=ylabel)
-
-    def updatePlotData(self):
-        self.c1.refreshPlot(self.parent.current_index)
-
-    def setCurrentIndex(self, current_index):
-        self.current_index = current_index
-
-    def setData(self, xdata, ydata):
-        pass
-
-
-class TableViewWindow(QMainWindow):
-    updateCurrentImage = pyqtSignal(bool)
-
-    def __init__(self, table_path, parent=None):
-        super(TableViewWindow, self).__init__(parent)
-        self.main_window = parent
-        self.table_filename = table_path
-        self.image_basepath = Path(table_path).absolute().parents[0]
-        self.resize(400, 400)
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-
-        self.current_index = 0
-
-        self.setupUi(self)
-
-        self.scatter = ScatterView(self)
-        self.scatter.show()
-        self.scatter.sendIndexClickedOn.connect(self.doubleClicked_table)
-
-    @staticmethod
-    def evaluateProvidedTable(fname):
-        out = loadTableFile(fname)
-        if isinstance(out, pd.DataFrame):
-            print("Building Table Window!")
-            return True
-        else:
-            return False
-
-    def getNextId(self):
-        if (self.current_index + 1) < len(self.df):
-            self.current_index += 1
-            self.getCurrentId()
-            self.updateCurrentImage.emit(True)
-            self.scatter.updatePlotData()
-
-    def getPreviousId(self):
-        self.current_index -= 1
-        if self.current_index >= 0:
-            self.getCurrentId()
-            self.updateCurrentImage.emit(True)
-            self.scatter.updatePlotData()
-        else:
-            self.current_index += 1
-
-    def getCurrentId(self):
-        self.data.selectRow(self.current_index)
-        print(self.current_index)
-
-    def doubleClicked_table(self, index):
-        if type(index) == int:
-            row_index = index
-        else:
-            row_index = index.row()
-        self.current_index = row_index
-        self.updateCurrentImage.emit(True)
-        self.data.selectRow(self.current_index)
-
-        self.scatter.updatePlotData()
-
-        print(f"Selected row: {row_index}")
-
-    def setupUi(self, test):
-        test.setObjectName("test")
-        test.resize(800, 600)
-        self.centralwidget = QWidget(test)
-        self.centralwidget.setObjectName("centralwidget")
-        self.horizontalLayout_2 = QHBoxLayout(self.centralwidget)
-        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
-        self.horizontalLayout = QHBoxLayout()
-        self.horizontalLayout.setObjectName("horizontalLayout")
-
-        self.data = QCTableView(self.centralwidget)
-        self.data.setObjectName("tableView")
-        self.data.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
-
-        # Define Background of current row, even if window is out of focus
-        palette = QPalette()
-        palette.setColor(QPalette.Inactive, QPalette.Highlight, palette.color(QPalette.Active, QPalette.Highlight))
-        palette.setColor(QPalette.Inactive, QPalette.HighlightedText, Qt.white)
-        self.data.setPalette(palette)
-
-        self.df = loadTableFile(self.table_filename)
-
-        self.model = PandasTableModel(self.df)
-        self.data.setModel(self.model)
-        self.data.selectRow(self.current_index)
-
-        self.horizontalLayout.addWidget(self.data)
-        self.horizontalLayout_2.addLayout(self.horizontalLayout)
-        test.setCentralWidget(self.centralwidget)
-
-    def getSelectedRowData(self):
-        sel_rows = self.data.selectionModel().selectedRows()[0]
-
-        model = self.data.model()
-
-        headers = model.getHeaders()
-        data_array = dict()
-
-        for key in REQUIRED_TABLE_COLUMNS:
-            path_idx = list(headers).index(key)
-            model_idx = model.index(sel_rows.row(), path_idx)
-            selected_data = model.data(model_idx)
-            data_array[key] = selected_data
-
-        return data_array
-
-    def updateQCEntry(self, status, comment=''):
-        # get selected row!
-        sel_row = self.data.selectionModel().selectedRows()[0]
-        row_idx = sel_row.row()
-        model = self.data.model()
-
-        headers = model.getHeaders()
-
-        qc_column = list(headers).index('QC')
-
-        self.df.iloc[row_idx, qc_column] = status
-
-        # Update comments field
-        comment_column = list(headers).index('comment')
-        self.df.iloc[row_idx, comment_column] = comment
-
-        if self.main_window.autoContinueCheckbox.isChecked():
-            self.getNextId()
-        else:
-            self.getSelectedRowData()
-            self.updateCurrentImage.emit(True)
-
-        self.saveTable()
-
-    def tableSaveExceptionMessageBox(self, error):
-        msg = QMessageBox()
-        msg.setIcon(QMessageBox.Critical)
-        msg.setStandardButtons(QMessageBox.Ok)
-        msg.setWindowTitle("Error saving table")
-        msg.setText(error.args[1])
-        msg.exec_()
-
-    def tableSaveEvent(self):
-        try:
-            if self.main_window.previous_saveas_path is None:
-                self.tableSaveAsEvent()
-            else:
-                self.saveTable(self.main_window.previous_saveas_path)
-        except PermissionError as e:
-            self.tableSaveExceptionMessageBox(e)
-
-    def tableSaveAsEvent(self):
-        name = QFileDialog.getSaveFileName(self, 'SaveFile', filter="CSV files (*.csv)")
-        try:
-            self.saveTable(name[0])
-            self.main_window.previous_saveas_path = name[0]
-        except PermissionError as e:
-            self.tableSaveExceptionMessageBox(e)
-
-    def saveTable(self, name='Test.csv'):
-        self.df.to_csv(name, index_label=None, sep=';')
 
 
 if __name__ == "__main__":
