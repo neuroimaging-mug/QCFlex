@@ -182,7 +182,7 @@ class TableViewWindow(QMainWindow):
         if pfile.exists():
             with open(pfile,"r") as rf:
                 contents = json.load(rf)
-            if Path(self.table_filename).stem in contents.keys():
+            if identifier in contents.keys():
                 data_loaded = contents[identifier]
                 if all(key in data_loaded for key in ("first_save", "last_save")):
                     # first_timestamp = datetime.strptime(data_loaded['first_save'], "%Y-%m-%d %H:%M:%S.%f")
@@ -215,6 +215,7 @@ class TableViewWindow(QMainWindow):
     def saveTable(self, name='Test.csv'):
         self.df.to_csv(name, index_label=None, sep=';')
         self.saveBonusData()
+        self.main_window.updateTimeLabel()
 
 # # Taken from http://taketwoprogramming.blogspot.com/2009/06/subclassing-jsonencoder-and-jsondecoder.html
 #

@@ -92,6 +92,24 @@ class QCMainWindow(QMainWindow):
 
         self.testFile(filenames[0])
 
+
+    def updateTimeLabel(self):
+        import json
+        from shutil import copyfile
+        appdata_path = Path("appdata")
+        appdata_path.mkdir(parents=True, exist_ok=True)
+        pfile = appdata_path / Path(".programdata.json")
+        identifier = Path(self.table.table_filename).stem
+
+        if pfile.exists():
+            with open(pfile, "r") as rf:
+                contents = json.load(rf)
+            if identifier in contents.keys():
+                data_loaded = contents[identifier]
+                if all(key in data_loaded for key in ("first_save", "last_save")):
+                    self.labelTimeSpent.setText(data_loaded['total_time_spent'])
+
+
     def testFile(self, text=None):
         """
         Tests the loaded table file to contain the correct columns
@@ -124,6 +142,8 @@ class QCMainWindow(QMainWindow):
             self.table.show()
 
             self.initMenuBarSaveActions()
+
+            self.updateTimeLabel()
         else:
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Critical)
