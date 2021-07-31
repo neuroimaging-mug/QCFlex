@@ -18,6 +18,7 @@ import pandas as pd
 from widgets.QCPandasTableWidget import *
 from widgets.QCTableViewWidget import QCTableView
 
+from datetime import datetime
 
 
 class TableViewWindow(QMainWindow):
@@ -150,6 +151,50 @@ class TableViewWindow(QMainWindow):
         msg.setText(error.args[1])
         msg.exec_()
 
+
+    def saveBonusData(self):
+        """
+        Storing time stamp of last save in json file in root folder.
+        :return:
+        """
+        import json
+        from shutil import copyfile
+        appdata_path = Path("appdata")
+        appdata_path.mkdir(parents=True, exist_ok=True)
+        pfile = appdata_path / Path(".programdata.json")
+
+
+        identifier = Path(self.table_filename).stem
+
+        data = {}
+        now = datetime.now()
+        if pfile.exists():
+            copyfile(pfile, str(pfile) + f'_{datetime.timestamp(now)}.bku')
+
+        tstamp = datetime.timestamp(now)
+        data.update({"last_save": now})
+
+        if not pfile.exists():
+            data.update({"first_save": now})
+            data.update({'total_time_spent': now - now})
+            with open(pfile, "w") as wf:
+                json.dump({identifier: data}, wf, indent=4, default=str)
+        if pfile.exists():
+            with open(pfile,"r") as rf:
+                contents = json.load(rf)
+            if Path(self.table_filename).stem in contents.keys():
+                data_loaded = contents[identifier]
+                if all(key in data_loaded for key in ("first_save", "last_save")):
+                    # first_timestamp = datetime.strptime(data_loaded['first_save'], "%Y-%m-%d %H:%M:%S.%f")
+                    last_timestamp = datetime.strptime(data_loaded['last_save'], "%Y-%m-%d %H:%M:%S.%f")
+                    timedelta = datetime.now() - last_timestamp
+                    data_loaded['last_save'] = now
+                    data_loaded['total_time_spent'] = (datetime.strptime(data_loaded['total_time_spent'], "%H:%M:%S")  + timedelta).strftime("%H:%M:%S")
+                    print(f"Total time spend in this evaluation file: {timedelta}")
+                    with open(pfile, "w") as wf:
+                        json.dump({identifier: data_loaded}, wf, indent=4, default=str)
+
+
     def tableSaveEvent(self):
         try:
             if self.main_window.previous_saveas_path is None:
@@ -169,3 +214,66 @@ class TableViewWindow(QMainWindow):
 
     def saveTable(self, name='Test.csv'):
         self.df.to_csv(name, index_label=None, sep=';')
+        self.saveBonusData()
+
+# # Taken from http://taketwoprogramming.blogspot.com/2009/06/subclassing-jsonencoder-and-jsondecoder.html
+#
+# from json import JSONDecoder, JSONEncoder
+# from datetime import timedelta
+# import json
+#
+# class DateTimeAwareJSONEncoder(JSONEncoder):
+#   """
+#   Converts a python object, where datetime and timedelta objects are converted
+#   into objects that can be decoded using the DateTimeAwareJSONDecoder.
+#   """
+#
+#   def __init__(self, encoding):
+#       json.JSONDecoder.__init__(self, encoding=encoding, object_hook=self.dict_to_object)
+#
+#   def default(self, obj):
+#     if isinstance(obj, datetime):
+#       return {
+#         '__type__' : 'datetime',
+#         'year' : obj.year,
+#         'month' : obj.month,
+#         'day' : obj.day,
+#         'hour' : obj.hour,
+#         'minute' : obj.minute,
+#         'second' : obj.second,
+#         'microsecond' : obj.microsecond,
+#       }
+#
+#     elif isinstance(obj, timedelta):
+#       return {
+#         '__type__' : 'timedelta',
+#         'days' : obj.days,
+#         'seconds' : obj.seconds,
+#         'microseconds' : obj.microseconds,
+#       }
+#
+#     else:
+#       return JSONEncoder.default(self, obj)
+#
+# class DateTimeAwareJSONDecoder(JSONDecoder):
+#   """
+#   Converts a json string, where datetime and timedelta objects were converted
+#   into objects using the DateTimeAwareJSONEncoder, back into a python object.
+#   """
+#
+#   def __init__(self):
+#       JSONDecoder.__init__(self, object_hook=self.dict_to_object)
+#
+#   def dict_to_object(self, d):
+#     if '__type__' not in d:
+#       return d
+#
+#     type = d.pop('__type__')
+#     if type == 'datetime':
+#       return datetime(**d)
+#     elif type == 'timedelta':
+#       return timedelta(**d)
+#     else:
+#       # Oops... better put this back together.
+#       d['__type__'] = type
+#       return d
