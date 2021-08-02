@@ -102,12 +102,15 @@ class QCMainWindow(QMainWindow):
         identifier = Path(self.table.table_filename).stem
 
         if pfile.exists():
-            with open(pfile, "r") as rf:
-                contents = json.load(rf)
-            if identifier in contents.keys():
-                data_loaded = contents[identifier]
-                if all(key in data_loaded for key in ("first_save", "last_save")):
-                    self.labelTimeSpent.setText(data_loaded['total_time_spent'])
+            try:
+                with open(pfile, "r") as rf:
+                    contents = json.load(rf)
+                if identifier in contents.keys():
+                    data_loaded = contents[identifier]
+                    if all(key in data_loaded for key in ("first_save", "last_save")):
+                        self.labelTimeSpent.setText(data_loaded['total_time_spent'])
+            except:
+                print("Something went wrong when loading the appdata file!")
 
 
     def testFile(self, text=None):

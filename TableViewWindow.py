@@ -177,23 +177,35 @@ class TableViewWindow(QMainWindow):
         if not pfile.exists():
             data.update({"first_save": now})
             data.update({'total_time_spent': now - now})
+            data.update({"filepath": self.table_filename})
             with open(pfile, "w") as wf:
                 json.dump({identifier: data}, wf, indent=4, default=str)
         if pfile.exists():
-            with open(pfile,"r") as rf:
-                contents = json.load(rf)
-            if identifier in contents.keys():
-                data_loaded = contents[identifier]
-                if all(key in data_loaded for key in ("first_save", "last_save")):
-                    # first_timestamp = datetime.strptime(data_loaded['first_save'], "%Y-%m-%d %H:%M:%S.%f")
-                    last_timestamp = datetime.strptime(data_loaded['last_save'], "%Y-%m-%d %H:%M:%S.%f")
-                    timedelta = datetime.now() - last_timestamp
-                    data_loaded['last_save'] = now
-                    data_loaded['total_time_spent'] = (datetime.strptime(data_loaded['total_time_spent'], "%H:%M:%S")  + timedelta).strftime("%H:%M:%S")
-                    print(f"Total time spend in this evaluation file: {timedelta}")
+            try:
+                with open(pfile,"r") as rf:
+                    contents = json.load(rf)
+                if identifier in contents.keys():
+                    data_loaded = contents[identifier]
+                    if all(key in data_loaded for key in ("first_save", "last_save")):
+                        # first_timestamp = datetime.strptime(data_loaded['first_save'], "%Y-%m-%d %H:%M:%S.%f")
+                        last_timestamp = datetime.strptime(data_loaded['last_save'], "%Y-%m-%d %H:%M:%S.%f")
+                        timedelta = datetime.now() - last_timestamp
+                        data_loaded['last_save'] = now
+                        data_loaded['total_time_spent'] = (datetime.strptime(data_loaded['total_time_spent'], "%H:%M:%S")  + timedelta).strftime("%H:%M:%S")
+                        print(f"Total time spend in this evaluation file: {timedelta}")
+                        data_loaded['filepath'] = self.table_filename
+                        contents.update({identifier: data_loaded})
+                        with open(pfile, "w") as wf:
+                            json.dump(contents, wf, indent=4, default=str)
+                else:
+                    data.update({"first_save": now})
+                    data.update({'total_time_spent': now - now})
+                    data['filepath'] = self.table_filename
+                    contents.update({identifier: data})
                     with open(pfile, "w") as wf:
-                        json.dump({identifier: data_loaded}, wf, indent=4, default=str)
-
+                        json.dump(contents, wf, indent=4, default=str)
+            except ValueError as e:
+                print('invalid json: %s' % e)
 
     def tableSaveEvent(self):
         try:
