@@ -16,10 +16,14 @@ from widgets.MplWidget import MplCanvas
 
 from utils import loadTableFile
 
+from pathlib import Path
 import pandas as pd
 import numpy as np
 
 class ScatterView(QMainWindow):
+    """
+    Window that displays graphs
+    """
     sendIndexClickedOn = pyqtSignal(int)
     receiveCurrentIndex = pyqtSignal(int)
 
@@ -42,6 +46,7 @@ class ScatterView(QMainWindow):
 
         layout.addWidget(self.c1)
 
+
         navi_toolbar = NavigationToolbar(self.c1, self)
         layout.addWidget(navi_toolbar)
 
@@ -51,9 +56,49 @@ class ScatterView(QMainWindow):
         self.xdata_box.addItems(list(self.valid_colums))
         layout.addWidget(self.xdata_box)
 
+        self.hbox = QHBoxLayout()
+        layout.addLayout(self.hbox)
+
+        self.ydata_collection_layout = QVBoxLayout()
+        layout.addLayout(self.ydata_collection_layout)
+
+        self.ydata_collection = []
         self.ydata_box = QComboBox()
         self.ydata_box.addItems(list(self.valid_colums))
-        layout.addWidget(self.ydata_box)
+        self.hbox.addWidget(self.ydata_box)
+        self.ydata_collection.append(self.ydata_box)
+
+
+
+
+
+        def addNew():
+            ydata_box_new = QComboBox()
+            ydata_box_new.addItems(list(self.valid_colums))
+            hbox = QHBoxLayout()
+            add = QPushButton()
+            add.clicked.connect(addNew)
+            add.setFixedWidth(20)
+            add.setIcon(QIcon(str(Path("files/plus-solid.svg"))))
+            remove = QPushButton()
+            remove.clicked.connect(self.removeCurrent)
+            remove.setIcon(QIcon(str(Path("files/minus-solid.svg"))))
+            remove.setFixedWidth(20)
+            hbox.addWidget(ydata_box_new)
+            hbox.addWidget(add)
+            hbox.addWidget(remove)
+            # layout.addLayout(hbox)
+            self.ydata_collection.append((hbox, ydata_box_new, add, remove))
+            self.ydata_collection_layout.addLayout(hbox)
+
+
+
+        add = QPushButton()
+        add.setFixedWidth(20)
+        add.setIcon(QIcon(str(Path("files/plus-solid.svg"))))
+        add.clicked.connect(addNew)
+        self.hbox.addWidget(add)
+
 
         self.xdata_box.currentTextChanged.connect(self.updatePlotDataX)
         self.ydata_box.currentTextChanged.connect(self.updatePlotDataY)
@@ -62,6 +107,25 @@ class ScatterView(QMainWindow):
         self.ydata_box.setCurrentIndex(1)
 
         self.setCentralWidget(cw)
+
+    def removeCurrent(self):
+        sender = self.sender()
+        print(self.ydata_collection[1:])
+        add_data_selectors = np.array(self.ydata_collection[1:]) # the first one is the first y data selector
+
+        row_idx, btn_idx = np.where(add_data_selectors == sender)
+        selected_row = add_data_selectors[row_idx]
+
+        selected_layout = selected_row[0][0]
+        for i in range(selected_layout.count()):
+            # item = selected_layout.itemAt(i)
+            item = selected_layout.itemAt(i).widget().deleteLater()
+            # print(item)
+            selected_layout.removeItem(item)
+
+        self.ydata_collection_layout.removeItem(selected_layout)
+        del self.ydata_collection[row_idx[0]+1]
+
 
     @pyqtSlot(int)
     def onForwardDataClickedOn(self, index):
