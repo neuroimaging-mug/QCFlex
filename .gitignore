@@ -14,3 +14,5 @@ main.pyproject.user
 __pycache__/
 
 build/
+
+appdata/

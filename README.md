@@ -17,5 +17,11 @@ and install all dependencies with
 
 *Happy Coding!*
 
+## Building Release
+In order to distribute this project as an executable, run in the root folder of the repository:
+> python setup.py bdist
+
+Avoid running the build process in an Anaconda environment to keep the package size as small as possible!
+
 ![grafik](https://user-images.githubusercontent.com/67055436/115269796-f45fe600-a13b-11eb-8222-ce6f6709102a.png)
 

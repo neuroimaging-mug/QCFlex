@@ -26,5 +26,5 @@ options = {
     }
 }
 
-setup(name="QualityCheck Gui", version="1.0", description='',
+setup(name="CQFlex", version="1.0", description='',
       options=options, executables=exe)
