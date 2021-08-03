@@ -19,7 +19,11 @@ class MplCanvas(FigureCanvasQTAgg):
         self._marker_size_highlight = 20
 
         def onpick(event):
+            if event.mouseevent.dblclick:
+                return
+
             collection = event.artist
+
             xdata, ydata = zip(*collection.get_offsets())
 
             if len(event.ind) > 1:
@@ -34,11 +38,6 @@ class MplCanvas(FigureCanvasQTAgg):
             self.transmit_data_index.emit(ind)
 
         self.pid = self.fig.canvas.mpl_connect('pick_event', onpick)
-
-        def onclick(event):
-            print('%s click: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %
-                  ('double' if event.dblclick else 'single', event.button,
-                   event.x, event.y, event.xdata, event.ydata))
 
         super(MplCanvas, self).__init__(self.fig)
 

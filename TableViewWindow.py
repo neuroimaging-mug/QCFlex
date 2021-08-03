@@ -66,8 +66,8 @@ class TableViewWindow(QMainWindow):
         else:
             row_index = index.row()
         self.current_index = row_index
-        self.updateCurrentImage.emit(True)
         self.data.selectRow(self.current_index)
+        self.updateCurrentImage.emit(True)
 
         self.scatter.updatePlotDataXY()
 
