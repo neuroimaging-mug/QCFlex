@@ -1,3 +1,4 @@
+import argparse
 import datetime
 import os
 import sys
@@ -56,6 +57,7 @@ class QCMainWindow(QMainWindow):
         self.actionLoad_File.triggered.connect(self.loadFile)
 
     def initMenuBarSaveActions(self):
+
         self.actionSave.triggered.connect(self.table.tableSaveEvent)
         self.actionSave.setEnabled(True)
         self.actionSave_As.triggered.connect(self.table.tableSaveAsEvent)
@@ -68,6 +70,10 @@ class QCMainWindow(QMainWindow):
 
         if dlg.exec_():
             filenames = dlg.selectedFiles()
+
+        if (len(filenames) == 0):
+            print("nothing selected")
+            return
 
         self.testFile(filenames[0])
 
@@ -472,11 +478,15 @@ class TableViewWindow(QMainWindow):
     def tableSaveAsEvent(self):
         name = QFileDialog.getSaveFileName(self, 'SaveFile', filter="CSV files (*.csv)")
         try:
-            self.saveTable(name[0])
-            self.main_window.previous_saveas_path = name[0]
+            if not all(name):
+                print("no name specified, return")
+                return
+            else:
+                self.saveTable(name[0])
+                self.main_window.previous_saveas_path = name[0]
         except PermissionError as e:
             self.tableSaveExceptionMessageBox(e)
-
+            return
     def saveTable(self, name='Test.csv'):
         self.df.to_csv(name, index_label=None, sep=';')
 
