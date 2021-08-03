@@ -46,6 +46,7 @@ class ScatterView(QMainWindow):
 
         layout.addWidget(self.c1)
 
+
         navi_toolbar = NavigationToolbar(self.c1, self)
         layout.addWidget(navi_toolbar)
 
@@ -73,6 +74,13 @@ class ScatterView(QMainWindow):
         self.ydata_collection_layout = QVBoxLayout()
         layout.addLayout(self.ydata_collection_layout)
 
+        self.hbox = QHBoxLayout()
+        layout.addLayout(self.hbox)
+
+        self.ydata_collection_layout = QVBoxLayout()
+        layout.addLayout(self.ydata_collection_layout)
+
+        self.ydata_collection = []
         self.ydata_box = QComboBox()
         self.ydata_box.addItems(self.getAvailableColumns())
 
