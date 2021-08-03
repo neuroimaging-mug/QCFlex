@@ -5,6 +5,8 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 
 
+PICKERRADIUS = 1
+
 class MplCanvas(FigureCanvasQTAgg):
     transmit_data_index = pyqtSignal(int)
 
@@ -19,7 +21,13 @@ class MplCanvas(FigureCanvasQTAgg):
         def onpick(event):
             collection = event.artist
             xdata, ydata = zip(*collection.get_offsets())
-            ind = int(event.ind)
+
+            if len(event.ind) > 1:
+                print("Clicked multiple indices, selecting first of them...")
+                ind = event.ind[0]
+            else:
+                ind = event.ind
+            ind = int(ind) #
             self.fig.canvas.flush_events()
             self.fig.canvas.draw()
             print('on pick line:', np.array([xdata[ind], ydata[ind]]).T)
@@ -40,7 +48,7 @@ class MplCanvas(FigureCanvasQTAgg):
         S = [self._marker_size_default for _ in range(len(xdat))]
         C[selected_index] = self._color_highlight
         S[selected_index] = self._marker_size_highlight
-        self.axes.scatter(xdat, ydat, picker=True, s=S, c=C)
+        self.axes.scatter(xdat, ydat, picker=True, pickradius=PICKERRADIUS, s=S, c=C)
         self.axes.set_xlabel(xlabel)
         self.axes.set_ylabel(ylabel)
         self.figure.canvas.draw()
@@ -54,7 +62,7 @@ class MplCanvas(FigureCanvasQTAgg):
             S = [self._marker_size_default for _ in range(len(xdat))]
             C[selected_index] = self._color_highlight
             S[selected_index] = self._marker_size_highlight
-            self.axes.scatter(xdat, ydat[:,i], picker=True, s=S, c=C)
+            self.axes.scatter(xdat, ydat[:,i], picker=True, pickradius=PICKERRADIUS, s=S, c=C)
         self.axes.set_xlabel(xlabel)
         self.axes.set_ylabel(ylabel)
         self.figure.canvas.draw()
@@ -69,5 +77,5 @@ class MplCanvas(FigureCanvasQTAgg):
 
         C[selected_index] = self._color_highlight
         S[selected_index] = self._marker_size_highlight
-        self.axes.scatter(xdat, ydat, picker=True, s=S, c=C)
+        self.axes.scatter(xdat, ydat, picker=True, pickradius=PICKERRADIUS, s=S, c=C)
         self.figure.canvas.draw()
