@@ -75,7 +75,7 @@ class ScatterView(QMainWindow):
         def addNewVariableSelector():
             ydata_box_new = QComboBox()
             ydata_box_new.addItems(list(self.valid_colums))
-            ydata_box_new.currentTextChanged.connect(self.updatePlotDataY)
+            ydata_box_new.currentTextChanged.connect(self.updatePlotDataXY)
             hbox = QHBoxLayout()
             # Add Button
             add = QPushButton()
@@ -102,8 +102,8 @@ class ScatterView(QMainWindow):
         self.hbox.addWidget(add)
 
 
-        self.xdata_box.currentTextChanged.connect(self.updatePlotDataX)
-        self.ydata_box.currentTextChanged.connect(self.updatePlotDataY)
+        self.xdata_box.currentTextChanged.connect(self.updatePlotDataXY)
+        self.ydata_box.currentTextChanged.connect(self.updatePlotDataXY)
 
         self.xdata_box.setCurrentIndex(1)
         self.ydata_box.setCurrentIndex(1)
@@ -146,25 +146,13 @@ class ScatterView(QMainWindow):
                 df[col] = data
         return valid_cols
 
-    def updatePlotDataX(self, new_column_name):
-        print("Init update of X-Axis!")
-
-        xlabel = new_column_name
-        ylabel = self.ydata_box.currentText()
-
-        x_sel = self.df[xlabel].values
-        y_sel = self.df[ylabel].values
-
-        self.c1.updatePlot(x_sel, y_sel, self.parent.current_index, xlabel=xlabel, ylabel=ylabel)
-
-    def updatePlotDataY(self, new_column_name):
-        print("Init update of Y-Axis!")
-
-        self.ydata_collection
-
+    def updatePlotDataXY(self):
+        """
+        Updates the plot with the columns selected in the dropdown boxes
+        :return:
+        """
 
         # Get current selected labels from all fields
-
         labels = []
         for idx, el in enumerate(self.ydata_collection):
             if idx == 0:
