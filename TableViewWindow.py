@@ -69,7 +69,7 @@ class TableViewWindow(QMainWindow):
         self.updateCurrentImage.emit(True)
         self.data.selectRow(self.current_index)
 
-        self.scatter.updatePlotData()
+        self.scatter.updatePlotDataXY()
 
         print(f"Selected row: {row_index}")
 
