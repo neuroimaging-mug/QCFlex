@@ -45,6 +45,21 @@ class MplCanvas(FigureCanvasQTAgg):
         self.axes.set_ylabel(ylabel)
         self.figure.canvas.draw()
 
+    def updatePlotMultiColumns(self, xdat, ydat, selected_index, xlabel=None, ylabel=None, colors=None):
+        self.axes.cla()
+
+        num_cols = ydat.shape[1]
+        for i in range(num_cols):
+            C = [ colors[i] for _ in range(len(xdat))]
+            S = [self._marker_size_default for _ in range(len(xdat))]
+            C[selected_index] = self._color_highlight
+            S[selected_index] = self._marker_size_highlight
+            self.axes.scatter(xdat, ydat[:,i], picker=True, s=S, c=C)
+        self.axes.set_xlabel(xlabel)
+        self.axes.set_ylabel(ylabel)
+        self.figure.canvas.draw()
+
+
     def refreshPlot(self, selected_index):
         # retrive current data
         xdat, ydat = zip(*self.axes.collections[0].get_offsets())

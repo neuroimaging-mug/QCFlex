@@ -75,6 +75,7 @@ class ScatterView(QMainWindow):
         def addNewVariableSelector():
             ydata_box_new = QComboBox()
             ydata_box_new.addItems(list(self.valid_colums))
+            ydata_box_new.currentTextChanged.connect(self.updatePlotDataY)
             hbox = QHBoxLayout()
             # Add Button
             add = QPushButton()
@@ -159,13 +160,28 @@ class ScatterView(QMainWindow):
     def updatePlotDataY(self, new_column_name):
         print("Init update of Y-Axis!")
 
+        self.ydata_collection
+
+
+        # Get current selected labels from all fields
+
+        labels = []
+        for idx, el in enumerate(self.ydata_collection):
+            if idx == 0:
+                labels.append(el.currentText())
+            else:
+                labels.append(el[1].currentText())
+
         xlabel=self.xdata_box.currentText()
-        ylabel=new_column_name
+        ylabels=labels
 
         x_sel = self.df[xlabel].values
-        y_sel = self.df[ylabel].values
+        y_sel = self.df[ylabels].values
 
-        self.c1.updatePlot(x_sel, y_sel, self.parent.current_index, xlabel=xlabel, ylabel=ylabel)
+        if len(labels) == 1:
+            self.c1.updatePlot(x_sel, y_sel, self.parent.current_index, xlabel=xlabel, ylabel=ylabels)
+        else:
+            self.c1.updatePlotMultiColumns(x_sel, y_sel, self.parent.current_index, xlabel=xlabel, ylabel=ylabels, colors=['blue', 'darkorange', 'yellowgreen', 'forestgreen', 'red'])
 
     def updatePlotData(self):
         self.c1.refreshPlot(self.parent.current_index)
