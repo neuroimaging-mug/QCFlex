@@ -90,6 +90,10 @@ class QCMainWindow(QMainWindow):
         if dlg.exec_():
             filenames = dlg.selectedFiles()
 
+        if (len(filenames) == 0):
+            print("nothing selected")
+            return
+
         self.testFile(filenames[0])
 
 
