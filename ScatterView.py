@@ -62,6 +62,8 @@ class ScatterView(QMainWindow):
 
         self.xdata_box = QComboBox()
         self.xdata_box.addItems(self.getAvailableColumns())
+
+
         layout.addWidget(self.xdata_box)
         self.ydata_collection.append((None, self.xdata_box, None, None))
 
@@ -73,12 +75,10 @@ class ScatterView(QMainWindow):
 
         self.ydata_box = QComboBox()
         self.ydata_box.addItems(self.getAvailableColumns())
+
+
         self.hbox.addWidget(self.ydata_box)
         self.ydata_collection.append((None, self.ydata_box, None, None))
-
-
-
-
 
 
         def addNewVariableSelector():
@@ -185,30 +185,31 @@ class ScatterView(QMainWindow):
 
     def updateAvailableColumns(self):
         sender = self.sender()
-        selected_text = sender.currentText()
+        if type(sender) == QComboBox:
+            selected_text = sender.currentText()
 
-        # Free current selection
-        for el in self.selectable_columns:
-            if sender in el:
-                el[1] = None
+            # Free current selection
+            for el in self.selectable_columns:
+                if sender in el:
+                    el[1] = None
 
-        # Assign to new selection
-        for el in self.selectable_columns:
-            if selected_text == el[0]:
-                el[1] = sender
+            # Assign to new selection
+            for el in self.selectable_columns:
+                if selected_text == el[0]:
+                    el[1] = sender
 
-        avail = self.getAvailableColumns()
+            avail = self.getAvailableColumns()
 
-
-        for idx, (_, box, _, _)  in enumerate(self.ydata_collection):
-            if box != sender:
-                box.blockSignals(True)
-                ct = box.currentText()
-                box.clear()
-                avail_conc = avail + [ct]
-                box.addItems(avail_conc)
-                box.setCurrentIndex(avail_conc.index(ct))
-                box.blockSignals(False)
+            # Update available items in all other Dropdown Menus
+            for idx, (_, box, _, _)  in enumerate(self.ydata_collection):
+                for rdx, (item, _) in enumerate(self.selectable_columns):
+                    if item not in avail:
+                        # print([box.itemText(i) for i in range(box.count())])
+                        box.view().setRowHidden(rdx, True)
+                    else:
+                        box.view().setRowHidden(rdx, False)
+        else:
+            print("WARNING: updateAvailableColumns - Wrong sender detected...")
 
     def getAvailableColumns(self):
         avail = []
