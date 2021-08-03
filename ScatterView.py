@@ -27,6 +27,8 @@ class ScatterView(QMainWindow):
     sendIndexClickedOn = pyqtSignal(int)
     receiveCurrentIndex = pyqtSignal(int)
 
+
+
     def __init__(self, parent=None):
         QMainWindow.__init__(self)
         self.setWindowTitle("application main window")
@@ -36,8 +38,6 @@ class ScatterView(QMainWindow):
 
         layout = QVBoxLayout()
         cw.setLayout(layout)
-
-
 
         self.df = loadTableFile(self.parent.table_filename)
 
@@ -52,9 +52,27 @@ class ScatterView(QMainWindow):
 
         self.valid_colums = self.evaluateValidColumns(self.df)
 
+        # Transform columns to be connected to QDropdownMenus
+        self.selectable_columns = []
+        for col in self.valid_colums:
+            self.selectable_columns.append([col, None])
+
+
+
+        self.ydata_collection = []
+
         self.xdata_box = QComboBox()
-        self.xdata_box.addItems(list(self.valid_colums))
+        self.xdata_box.addItems(self.getAvailableColumns())
+
+
         layout.addWidget(self.xdata_box)
+        self.ydata_collection.append((None, self.xdata_box, None, None))
+
+        self.hbox = QHBoxLayout()
+        layout.addLayout(self.hbox)
+
+        self.ydata_collection_layout = QVBoxLayout()
+        layout.addLayout(self.ydata_collection_layout)
 
         self.hbox = QHBoxLayout()
         layout.addLayout(self.hbox)
@@ -64,30 +82,38 @@ class ScatterView(QMainWindow):
 
         self.ydata_collection = []
         self.ydata_box = QComboBox()
-        self.ydata_box.addItems(list(self.valid_colums))
+
+        self.ydata_box.addItems(self.getAvailableColumns())
+
+
         self.hbox.addWidget(self.ydata_box)
-        self.ydata_collection.append(self.ydata_box)
+        self.ydata_collection.append((None, self.ydata_box, None, None))
 
 
+        def addNewVariableSelector():
+            """
+            Add a new row of variable selection dropdown and add/remove button to scatterview.
 
-
-
-        def addNew():
+            :return:
+            """
             ydata_box_new = QComboBox()
-            ydata_box_new.addItems(list(self.valid_colums))
+            ydata_box_new.addItems(self.getAvailableColumns())
+            ydata_box_new.currentTextChanged.connect(self.updatePlotDataXY)
             hbox = QHBoxLayout()
+            # Add Button
             add = QPushButton()
-            add.clicked.connect(addNew)
+            add.clicked.connect(addNewVariableSelector)
             add.setFixedWidth(20)
             add.setIcon(QIcon(str(Path("files/plus-solid.svg"))))
+            # Delete Button
             remove = QPushButton()
-            remove.clicked.connect(self.removeCurrent)
+            remove.clicked.connect(self.removeCurrentVariableSelector)
             remove.setIcon(QIcon(str(Path("files/minus-solid.svg"))))
             remove.setFixedWidth(20)
+            #
             hbox.addWidget(ydata_box_new)
             hbox.addWidget(add)
             hbox.addWidget(remove)
-            # layout.addLayout(hbox)
             self.ydata_collection.append((hbox, ydata_box_new, add, remove))
             self.ydata_collection_layout.addLayout(hbox)
 
@@ -96,19 +122,20 @@ class ScatterView(QMainWindow):
         add = QPushButton()
         add.setFixedWidth(20)
         add.setIcon(QIcon(str(Path("files/plus-solid.svg"))))
-        add.clicked.connect(addNew)
+        add.clicked.connect(addNewVariableSelector)
         self.hbox.addWidget(add)
 
+        ##
+        self.xdata_box.currentTextChanged.connect(self.updatePlotDataXY)
+        self.ydata_box.currentTextChanged.connect(self.updatePlotDataXY)
 
-        self.xdata_box.currentTextChanged.connect(self.updatePlotDataX)
-        self.ydata_box.currentTextChanged.connect(self.updatePlotDataY)
+        # self.xdata_box.setCurrentIndex(1)
+        # self.ydata_box.setCurrentIndex(2)
 
-        self.xdata_box.setCurrentIndex(1)
-        self.ydata_box.setCurrentIndex(1)
 
         self.setCentralWidget(cw)
 
-    def removeCurrent(self):
+    def removeCurrentVariableSelector(self):
         sender = self.sender()
         print(self.ydata_collection[1:])
         add_data_selectors = np.array(self.ydata_collection[1:]) # the first one is the first y data selector
@@ -144,27 +171,86 @@ class ScatterView(QMainWindow):
                 df[col] = data
         return valid_cols
 
-    def updatePlotDataX(self, new_column_name):
-        print("Init update of X-Axis!")
+    def getValidColumns(self):
+        """
+        Selects only columns names, that are not selected by the dropdown boxes
+        :return: list of available column names
+        """
+        available_columns = self.evaluateValidColumns(self.df)
 
-        xlabel = new_column_name
-        ylabel = self.ydata_box.currentText()
+        selected_columns = []
+        # Get selected variables
+        for idx, row in enumerate(self.ydata_collection):
+            if idx == 0:
+                selected_columns.append(row.currentText())
+            else:
+                selected_columns.append(row[1])
 
-        x_sel = self.df[xlabel].values
-        y_sel = self.df[ylabel].values
+        for sel in selected_columns:
+            if sel in available_columns:
+                available_columns.remove(sel)
 
-        self.c1.updatePlot(x_sel, y_sel, self.parent.current_index, xlabel=xlabel, ylabel=ylabel)
+        return available_columns
 
-    def updatePlotDataY(self, new_column_name):
-        print("Init update of Y-Axis!")
+    def updateAvailableColumns(self):
+        sender = self.sender()
+        if type(sender) == QComboBox:
+            selected_text = sender.currentText()
+
+            # Free current selection
+            for el in self.selectable_columns:
+                if sender in el:
+                    el[1] = None
+
+            # Assign to new selection
+            for el in self.selectable_columns:
+                if selected_text == el[0]:
+                    el[1] = sender
+
+            avail = self.getAvailableColumns()
+
+            # Update available items in all other Dropdown Menus
+            for idx, (_, box, _, _)  in enumerate(self.ydata_collection):
+                for rdx, (item, _) in enumerate(self.selectable_columns):
+                    if item not in avail:
+                        # print([box.itemText(i) for i in range(box.count())])
+                        box.view().setRowHidden(rdx, True)
+                    else:
+                        box.view().setRowHidden(rdx, False)
+        else:
+            print("WARNING: updateAvailableColumns - Wrong sender detected...")
+
+    def getAvailableColumns(self):
+        avail = []
+        for el in self.selectable_columns:
+            if el[1] == None:
+                avail.append(el[0])
+
+        return avail
+
+    def updatePlotDataXY(self):
+        """
+        Updates the plot with the columns selected in the dropdown boxes
+        :return:
+        """
+
+        # Get current selected labels from all fields
+        labels = []
+        for idx, el in enumerate(self.ydata_collection[1:]):
+            labels.append(el[1].currentText())
 
         xlabel=self.xdata_box.currentText()
-        ylabel=new_column_name
+        ylabels=labels
 
         x_sel = self.df[xlabel].values
-        y_sel = self.df[ylabel].values
+        y_sel = self.df[ylabels].values
 
-        self.c1.updatePlot(x_sel, y_sel, self.parent.current_index, xlabel=xlabel, ylabel=ylabel)
+        if len(labels) == 1:
+            self.c1.updatePlot(x_sel, y_sel, self.parent.current_index, xlabel=xlabel, ylabel=ylabels)
+        else:
+            self.c1.updatePlotMultiColumns(x_sel, y_sel, self.parent.current_index, xlabel=xlabel, ylabel=ylabels, colors=['blue', 'darkorange', 'yellowgreen', 'forestgreen', 'red'])
+
+        self.updateAvailableColumns()
 
     def updatePlotData(self):
         self.c1.refreshPlot(self.parent.current_index)
