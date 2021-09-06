@@ -123,6 +123,10 @@ class TableViewWindow(QMainWindow):
         self.horizontalLayout_2.addLayout(self.horizontalLayout)
         test.setCentralWidget(self.centralwidget)
 
+    def deleteUI(self):
+        self.scatter.close()
+        self.data.close()
+
     def getSelectedRowData(self):
         sel_rows = self.data.selectionModel().selectedRows()[0]
 
