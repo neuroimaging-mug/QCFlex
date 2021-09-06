@@ -123,8 +123,8 @@ class QCMainWindow(QMainWindow):
         :param text:
         :return:
         """
-        if hasattr(self, 'table'):
-            print("Table already loaded!")
+        if hasattr(self, 'table'): # TODO: LP:20210829 funktioniert das? Es blockiert das Laden irgend einer neuen Datei. Man muss schauen, ob der gleiche Dateipfad geladen wurde.
+            print("Table already loaded!") # TODO: LP:20210829: anstatt print msgboxes verwenden (sofern es das in python gibt)
             return
 
         if text == None:
@@ -185,6 +185,9 @@ class QCMainWindow(QMainWindow):
                 self.passBtn.setStyleSheet(BTN_PASS_STYLESHEET)
             elif self.current_data['QC'] == 'FAIL':
                 self.failBtn.setStyleSheet(BTN_FAIL_STYLESHEET)
+            else:
+                self.passBtn.setStyleSheet(BTN_DEFAULT_STYLESHEET)
+                self.failBtn.setStyleSheet(BTN_DEFAULT_STYLESHEET)
 
             if self.current_data['comment'] != '':
                 self.commentBoxEdit.document().setPlainText(self.current_data['comment'])
