@@ -180,26 +180,6 @@ class QCMainWindow(QMainWindow):
         if os.path.isfile(fpath):
             self.img_available = True
             self.imageView.setImage(fpath)
-
-            if self.current_data['QC'] != 'nan':
-                self.updateComment.setEnabled(True)
-            else:
-                self.updateComment.setEnabled(False)
-
-            # Update stylesheet of buttons to represent previous selections
-            self.passBtn.setStyleSheet(BTN_DEFAULT_STYLESHEET)
-            self.failBtn.setStyleSheet(BTN_DEFAULT_STYLESHEET)
-
-            if self.current_data['QC'] == 'PASS':
-                self.passBtn.setStyleSheet(BTN_PASS_STYLESHEET)
-            elif self.current_data['QC'] == 'FAIL':
-                self.failBtn.setStyleSheet(BTN_FAIL_STYLESHEET)
-            else:
-                self.passBtn.setStyleSheet(BTN_DEFAULT_STYLESHEET)
-                self.failBtn.setStyleSheet(BTN_DEFAULT_STYLESHEET)
-
-            if self.current_data['comment'] != '':
-                self.commentBoxEdit.document().setPlainText(self.current_data['comment'])
         else:
             tmpdir = Path(tempfile.gettempdir())
             img_w, img_h = 600, 150
@@ -217,6 +197,26 @@ class QCMainWindow(QMainWindow):
             image.save(tmp_image_path)
 
             self.imageView.setImage(tmp_image_path)
+            
+        if self.current_data['QC'] != 'nan':
+            self.updateComment.setEnabled(True)
+            else:
+                self.updateComment.setEnabled(False)
+
+            # Update stylesheet of buttons to represent previous selections
+            self.passBtn.setStyleSheet(BTN_DEFAULT_STYLESHEET)
+            self.failBtn.setStyleSheet(BTN_DEFAULT_STYLESHEET)
+
+            if self.current_data['QC'] == 'PASS':
+                self.passBtn.setStyleSheet(BTN_PASS_STYLESHEET)
+            elif self.current_data['QC'] == 'FAIL':
+                self.failBtn.setStyleSheet(BTN_FAIL_STYLESHEET)
+            else:
+                self.passBtn.setStyleSheet(BTN_DEFAULT_STYLESHEET)
+                self.failBtn.setStyleSheet(BTN_DEFAULT_STYLESHEET)
+
+        if self.current_data['comment'] != '':
+            self.commentBoxEdit.document().setPlainText(self.current_data['comment'])
 
 
     def clickedPassFail(self, ):
