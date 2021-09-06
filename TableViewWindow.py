@@ -135,6 +135,7 @@ class TableViewWindow(QMainWindow):
         return data_array
 
     def updateQCEntry(self, status, comment=''):
+        """Update the QC entry in the table view"""
         # get selected row!
         sel_row = self.data.selectionModel().selectedRows()[0]
         row_idx = sel_row.row()
@@ -157,6 +158,7 @@ class TableViewWindow(QMainWindow):
             self.updateCurrentImage.emit(True)
 
         self.saveTable()
+        self.update() #
 
     def tableSaveExceptionMessageBox(self, error):
         msg = QMessageBox()
