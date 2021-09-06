@@ -36,9 +36,37 @@ class TableViewWindow(QMainWindow):
 
         self.setupUi(self)
 
+        # Setting the geometry of all windows for a better overview!
+        ## Move main window to the right
+        geo = QGuiApplication.primaryScreen().availableGeometry()
+        print(geo.width(), geo.height())
+        sw = geo.width()
+        sh = geo.height()
+        v_offset = 30
+        h_offset = 0
+        main_window_width = int(sw * 0.6)
+        main_window_height = int(sh * 1)
+        scatter_window_width = int(sw * 0.4)
+        scatter_window_height = int(sh * 0.5)
+        table_window_width = int(sw * 0.4)
+        table_window_height = sh - scatter_window_height
+
+        # Setting main window geometry
+        position = (sw - main_window_width, v_offset)
+        self.main_window.setGeometry(*position, main_window_width, main_window_height - v_offset)
+
+        # Setting table view geometry
+        position = (0, scatter_window_height)
+        self.setGeometry(*position, scatter_window_width, scatter_window_height)
+
+        ## Create Scatter View window
         self.scatter = ScatterView(self)
         self.scatter.show()
         self.scatter.sendIndexClickedOn.connect(self.doubleClicked_table)
+
+        # Setting scatter view geometry
+        position = (0, v_offset)
+        self.scatter.setGeometry(*position, table_window_width, table_window_height- v_offset * 2)
 
     def updateTableData(self, fpath):
         """Updates the table data when the table object already exists!"""
@@ -52,8 +80,6 @@ class TableViewWindow(QMainWindow):
         self.model = PandasTableModel(self.df)
         self.data.setModel(self.model)
         self.data.selectRow(self.current_index)
-
-
 
     def getNextId(self):
         if (self.current_index + 1) < len(self.df):
@@ -135,7 +161,7 @@ class TableViewWindow(QMainWindow):
         headers = model.getHeaders()
         data_array = dict()
 
-        for key in REQUIRED_TABLE_COLUMNS: # TODO: Handle exception if not all required colums are provided!
+        for key in REQUIRED_TABLE_COLUMNS:  # TODO: Handle exception if not all required colums are provided!
             path_idx = list(headers).index(key)
             model_idx = model.index(sel_rows.row(), path_idx)
             selected_data = model.data(model_idx)
@@ -208,7 +234,7 @@ class TableViewWindow(QMainWindow):
             with open(pfile, "w") as wf:
                 json.dump({identifier: data}, wf, indent=4, default=str)
 
-        with open(pfile,"r") as rf:
+        with open(pfile, "r") as rf:
             try:
                 contents = json.load(rf)
             except ValueError as e:
@@ -220,7 +246,9 @@ class TableViewWindow(QMainWindow):
                 last_timestamp = datetime.strptime(data_loaded['last_save'], "%Y-%m-%d %H:%M:%S.%f")
                 timedelta = datetime.now() - last_timestamp
                 data_loaded['last_save'] = now
-                data_loaded['total_time_spent'] = (datetime.strptime(data_loaded['total_time_spent'], "%H:%M:%S")  + timedelta).strftime("%H:%M:%S")
+                data_loaded['total_time_spent'] = (
+                            datetime.strptime(data_loaded['total_time_spent'], "%H:%M:%S") + timedelta).strftime(
+                    "%H:%M:%S")
                 print(f"Total time spend in this evaluation file: {timedelta}")
                 data_loaded['filepath'] = self.table_filename
                 contents.update({identifier: data_loaded})
@@ -233,7 +261,6 @@ class TableViewWindow(QMainWindow):
             contents.update({identifier: data})
             with open(pfile, "w") as wf:
                 json.dump(contents, wf, indent=4, default=str)
-
 
     def tableSaveEvent(self):
         try:

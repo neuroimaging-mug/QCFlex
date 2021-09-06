@@ -41,6 +41,14 @@ class QCMainWindow(QMainWindow):
 
         self.img_available = False
 
+        self.window_width = 500
+        self.window_height = 500
+
+        geo = QGuiApplication.primaryScreen().geometry()
+        print(geo.width(), geo.height())
+        self.position = ( ( geo.width() - self.window_width ) // 2 ,(geo.height() - self.window_height) // 2)
+        # self.setGeometry((geo.width() - self.window_width) // 2, (geo.height() - self.window_height ) //2, self.window_width, self.window_height)
+        self.setGeometry(*self.position, self.window_width, self.window_height)
         self.show()
 
     def initMenuBarLoadActions(self):
