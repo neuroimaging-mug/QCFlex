@@ -140,9 +140,14 @@ class QCMainWindow(QMainWindow):
             self.imageView.setLoadedId.connect(self.setLoadedId)
 
             if hasattr(self, 'table'):
-                self.table.updateTableData(fpath)
+                #
+                self.table.deleteUI()
+                self.table.close()
+                del self.table
+                self.table = TableViewWindow(fpath, self)
             else:
                 self.table = TableViewWindow(fpath, self)
+
             self.initButtonConnections()
 
             self.table.updateCurrentImage.connect(self.updateCurrentImage)
@@ -234,6 +239,7 @@ class QCMainWindow(QMainWindow):
         self.timer.start(DELAY)
 
         self.previous_sender = self.sender()
+        self.sendUpdate(self.sender)
 
     def sendUpdate(self, source=None):
         """
