@@ -21,7 +21,7 @@ options = {
         'packages': ['PyQt5.sip','pkg_resources._vendor', 'pandas', 'numpy', 'qimage2ndarray', 'matplotlib.backends.backend_qt5agg'],
         'excludes': ['PyQt6', 'PySide2'],
         # "include_files": [os.path.join(python_dir, "python3.dll"), os.path.join(python_dir, "vcruntime140.dll")],
-        'include_files': ['widgets/', 'form.ui', 'stylesheet.css'],
+        'include_files': ['widgets/', 'files/', 'form.ui', 'stylesheet.css'],
         'namespace_packages': ['mpl_toolkits']
     }
 }
