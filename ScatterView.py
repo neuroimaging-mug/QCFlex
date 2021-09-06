@@ -236,7 +236,7 @@ class ScatterView(QMainWindow):
 
         # Get current selected labels from all fields
         labels = []
-        for idx, el in enumerate(self.ydata_collection[1:]):
+        for idx, el in enumerate(self.ydata_collection[0:]):
             labels.append(el[1].currentText())
 
         xlabel=self.xdata_box.currentText()
