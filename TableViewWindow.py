@@ -40,6 +40,21 @@ class TableViewWindow(QMainWindow):
         self.scatter.show()
         self.scatter.sendIndexClickedOn.connect(self.doubleClicked_table)
 
+    def updateTableData(self, fpath):
+        """Updates the table data when the table object already exists!"""
+        lg.info("Updating table data.")
+        print("Updating table data.")
+        self.table_filename = fpath
+        self.df = loadTableFile(self.table_filename)
+
+        self.current_index = 0
+
+        self.model = PandasTableModel(self.df)
+        self.data.setModel(self.model)
+        self.data.selectRow(self.current_index)
+
+
+
     def getNextId(self):
         if (self.current_index + 1) < len(self.df):
             self.current_index += 1
@@ -111,7 +126,7 @@ class TableViewWindow(QMainWindow):
         headers = model.getHeaders()
         data_array = dict()
 
-        for key in REQUIRED_TABLE_COLUMNS:
+        for key in REQUIRED_TABLE_COLUMNS: # TODO: Handle exception if not all required colums are provided!
             path_idx = list(headers).index(key)
             model_idx = model.index(sel_rows.row(), path_idx)
             selected_data = model.data(model_idx)

@@ -123,9 +123,10 @@ class QCMainWindow(QMainWindow):
         :param text:
         :return:
         """
-        if hasattr(self, 'table'): # TODO: LP:20210829 funktioniert das? Es blockiert das Laden irgend einer neuen Datei. Man muss schauen, ob der gleiche Dateipfad geladen wurde.
-            print("Table already loaded!") # TODO: LP:20210829: anstatt print msgboxes verwenden (sofern es das in python gibt)
-            return
+        # if hasattr(self, 'table'): # TODO: LP:20210829 funktioniert das? Es blockiert das Laden irgend einer neuen Datei. Man muss schauen, ob der gleiche Dateipfad geladen wurde.
+        #     # print("Table already loaded!") # TODO: LP:20210829: anstatt print msgboxes verwenden (sofern es das in python gibt)
+        #     raise Warning("Table already loaded!")
+        #     return
 
         if text == None:
             fpath = self.loadFilePath.text()
@@ -138,7 +139,10 @@ class QCMainWindow(QMainWindow):
 
             self.imageView.setLoadedId.connect(self.setLoadedId)
 
-            self.table = TableViewWindow(fpath, self)
+            if hasattr(self, 'table'):
+                self.table.updateTableData(fpath)
+            else:
+                self.table = TableViewWindow(fpath, self)
             self.initButtonConnections()
 
             self.table.updateCurrentImage.connect(self.updateCurrentImage)
