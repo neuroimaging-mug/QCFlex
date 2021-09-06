@@ -80,6 +80,11 @@ class TableViewWindow(QMainWindow):
             row_index = index
         else:
             row_index = index.row()
+
+        if self.current_index == row_index:
+            # Same row was selected... skipping...
+            pass
+
         self.current_index = row_index
         self.data.selectRow(self.current_index)
         self.updateCurrentImage.emit(True)
@@ -135,6 +140,7 @@ class TableViewWindow(QMainWindow):
         return data_array
 
     def updateQCEntry(self, status, comment=''):
+        """Update the QC entry in the table view"""
         # get selected row!
         sel_row = self.data.selectionModel().selectedRows()[0]
         row_idx = sel_row.row()
@@ -157,6 +163,7 @@ class TableViewWindow(QMainWindow):
             self.updateCurrentImage.emit(True)
 
         self.saveTable()
+        self.update() #
 
     def tableSaveExceptionMessageBox(self, error):
         msg = QMessageBox()

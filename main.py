@@ -76,7 +76,7 @@ class QCMainWindow(QMainWindow):
 
         self.updateComment.clicked.connect(self.sendUpdate)
 
-        self.table.data.doubleClicked.connect(self.table.doubleClicked_table)
+        self.table.data.clicked.connect(self.table.doubleClicked_table)
 
     def loadFile(self):
         """
