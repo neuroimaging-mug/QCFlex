@@ -6,6 +6,7 @@ class PandasTableModel(QtCore.QAbstractTableModel):
     '''
     Source: https://stackoverflow.com/a/44605011
     '''
+    # TODO: Handle this source reference correctly!
 
     DtypeRole = QtCore.Qt.UserRole + 1000
     ValueRole = QtCore.Qt.UserRole + 1001
