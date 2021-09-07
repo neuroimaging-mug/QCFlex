@@ -20,14 +20,13 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 
+
 class ScatterView(QMainWindow):
     """
     Window that displays graphs
     """
     sendIndexClickedOn = pyqtSignal(int)
     receiveCurrentIndex = pyqtSignal(int)
-
-
 
     def __init__(self, parent=None):
         QMainWindow.__init__(self)
@@ -46,7 +45,6 @@ class ScatterView(QMainWindow):
 
         layout.addWidget(self.c1)
 
-
         navi_toolbar = NavigationToolbar(self.c1, self)
         layout.addWidget(navi_toolbar)
 
@@ -57,13 +55,10 @@ class ScatterView(QMainWindow):
         for col in self.valid_colums:
             self.selectable_columns.append([col, None])
 
-
-
         self.ydata_collection = []
 
         self.xdata_box = QComboBox()
         self.xdata_box.addItems(self.getAvailableColumns())
-
 
         layout.addWidget(self.xdata_box)
         self.ydata_collection.append((None, self.xdata_box, None, None))
@@ -78,14 +73,12 @@ class ScatterView(QMainWindow):
 
         self.ydata_box.addItems(self.getAvailableColumns())
 
-
         self.hbox.addWidget(self.ydata_box)
         self.ydata_collection.append((None, self.ydata_box, None, None))
 
-
         def addNewVariableSelector():
             """
-            Add a new row of variable selection dropdown and add/remove button to scatterview.
+            Add a new row of variable selection dropdown and add/rermove button to scatterview.
 
             :return:
             """
@@ -93,11 +86,13 @@ class ScatterView(QMainWindow):
             ydata_box_new.addItems(self.getAvailableColumns())
             ydata_box_new.currentTextChanged.connect(self.updatePlotDataXY)
             hbox = QHBoxLayout()
+
             # Add Button
             add = QPushButton()
             add.clicked.connect(addNewVariableSelector)
             add.setFixedWidth(20)
             add.setIcon(QIcon(str(Path("files/plus-solid.svg"))))
+
             # Delete Button
             remove = QPushButton()
             remove.clicked.connect(self.removeCurrentVariableSelector)
@@ -110,42 +105,33 @@ class ScatterView(QMainWindow):
             self.ydata_collection.append((hbox, ydata_box_new, add, remove))
             self.ydata_collection_layout.addLayout(hbox)
 
-
-
         add = QPushButton()
         add.setFixedWidth(20)
         add.setIcon(QIcon(str(Path("files/plus-solid.svg"))))
         add.clicked.connect(addNewVariableSelector)
         self.hbox.addWidget(add)
 
-        ##
         self.xdata_box.currentTextChanged.connect(self.updatePlotDataXY)
         self.ydata_box.currentTextChanged.connect(self.updatePlotDataXY)
-
-        # self.xdata_box.setCurrentIndex(1)
-        # self.ydata_box.setCurrentIndex(2)
-
 
         self.setCentralWidget(cw)
 
     def removeCurrentVariableSelector(self):
         sender = self.sender()
         print(self.ydata_collection[1:])
-        add_data_selectors = np.array(self.ydata_collection[1:]) # the first one is the first y data selector
+        add_data_selectors = np.array(self.ydata_collection[1:])  # the first one is the first y data selector
 
         row_idx, btn_idx = np.where(add_data_selectors == sender)
         selected_row = add_data_selectors[row_idx]
 
         selected_layout = selected_row[0][0]
         for i in range(selected_layout.count()):
-            # item = selected_layout.itemAt(i)
             item = selected_layout.itemAt(i).widget().deleteLater()
-            # print(item)
             selected_layout.removeItem(item)
 
         self.ydata_collection_layout.removeItem(selected_layout)
-        del self.ydata_collection[row_idx[0]+1]
-
+        del self.ydata_collection[row_idx[0] + 1]
+        self.updatePlotDataXY()
 
     @pyqtSlot(int)
     def onForwardDataClickedOn(self, index):
@@ -203,7 +189,7 @@ class ScatterView(QMainWindow):
             avail = self.getAvailableColumns()
 
             # Update available items in all other Dropdown Menus
-            for idx, (_, box, _, _)  in enumerate(self.ydata_collection):
+            for idx, (_, box, _, _) in enumerate(self.ydata_collection):
                 for rdx, (item, _) in enumerate(self.selectable_columns):
                     if item not in avail:
                         # print([box.itemText(i) for i in range(box.count())])
@@ -229,11 +215,11 @@ class ScatterView(QMainWindow):
 
         # Get current selected labels from all fields
         labels = []
-        for idx, el in enumerate(self.ydata_collection[0:]):
+        for idx, el in enumerate(self.ydata_collection[1:]):
             labels.append(el[1].currentText())
 
-        xlabel=self.xdata_box.currentText()
-        ylabels=labels
+        xlabel = self.xdata_box.currentText()
+        ylabels = labels
 
         x_sel = self.df[xlabel].values
         y_sel = self.df[ylabels].values
@@ -241,7 +227,8 @@ class ScatterView(QMainWindow):
         if len(labels) == 1:
             self.c1.updatePlot(x_sel, y_sel, self.parent.current_index, xlabel=xlabel, ylabel=ylabels)
         else:
-            self.c1.updatePlotMultiColumns(x_sel, y_sel, self.parent.current_index, xlabel=xlabel, ylabel=ylabels, colors=['blue', 'darkorange', 'yellowgreen', 'forestgreen', 'red'])
+            self.c1.updatePlotMultiColumns(x_sel, y_sel, self.parent.current_index, xlabel=xlabel, ylabel=ylabels,
+                                           colors=['blue', 'darkorange', 'yellowgreen', 'forestgreen', 'red'])
 
         self.updateAvailableColumns()
 
