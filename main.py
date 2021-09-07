@@ -68,6 +68,23 @@ class QCMainWindow(QMainWindow):
         self.actionSave_As.triggered.connect(self.table.tableSaveAsEvent)
         self.actionSave_As.setEnabled(True)
 
+    def initMenuBarAboutActions(self):
+        self.actionHelp.triggered.connect(self.callAbout)
+
+    def callAbout(self):
+        text = f"""<h3>QCFlex was developed by ... </h3>
+<br></br>
+Source can be found on GitHub: <a href='https://github.com/neuroimaging-mug/QCFlex'>QCFlex on GitHub</a>"""
+
+        msg = QMessageBox(self)
+        msg.setIcon(QMessageBox.Information)
+        msg.setStandardButtons(QMessageBox.Ok)
+        msg.setWindowTitle("About QCFlex")
+        # msg.setTextFormat(Qt.RichText)
+        # msg.setText("text <a href='http://www.trolltech.com'>Trolltech</a>")
+        msg.setText(text)
+        msg.exec_()
+
     def initButtonConnections(self):
         """
         Conntects all buttons with the correct functionality
