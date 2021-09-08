@@ -20,6 +20,8 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 
+from ScatterViewYDataHandler import *
+
 
 class ScatterView(QMainWindow):
     """
@@ -60,17 +62,22 @@ class ScatterView(QMainWindow):
         self.xdata_box = QComboBox()
         self.xdata_box.addItems(self.getAvailableColumns())
 
+
+        self.yDataCollection = ScatterViewHandler()
+
         layout.addWidget(self.xdata_box)
-        self.ydata_collection.append((None, self.xdata_box, None, None))
+        # self.ydata_collection.append((None, self.xdata_box, None, None))
+        self.yDataCollection.addEntry(None, self.xdata_box, None, None, axis="x")
+
 
         self.hbox = QHBoxLayout()
         layout.addLayout(self.hbox)
 
-        self.ydata_collection_layout = QVBoxLayout()
-        layout.addLayout(self.ydata_collection_layout)
+        # self.ydata_collection_layout = QVBoxLayout()
+
+        layout.addLayout(self.yDataCollection.layout)
 
         self.ydata_box = QComboBox()
-
         self.ydata_box.addItems(self.getAvailableColumns())
 
         self.hbox.addWidget(self.ydata_box)
@@ -102,8 +109,9 @@ class ScatterView(QMainWindow):
             hbox.addWidget(ydata_box_new)
             hbox.addWidget(add)
             hbox.addWidget(remove)
-            self.ydata_collection.append((hbox, ydata_box_new, add, remove))
-            self.ydata_collection_layout.addLayout(hbox)
+            self.yDataCollection.addEntry(hbox, ydata_box_new, add, remove)
+            # self.ydata_collection.append((hbox, ydata_box_new, add, remove))
+            # self.ydata_collection_layout.addLayout(hbox)
 
         add = QPushButton()
         add.setFixedWidth(20)
@@ -119,18 +127,8 @@ class ScatterView(QMainWindow):
     def removeCurrentVariableSelector(self):
         sender = self.sender()
         print(self.ydata_collection[1:])
-        add_data_selectors = np.array(self.ydata_collection[1:])  # the first one is the first y data selector
 
-        row_idx, btn_idx = np.where(add_data_selectors == sender)
-        selected_row = add_data_selectors[row_idx]
-
-        selected_layout = selected_row[0][0]
-        for i in range(selected_layout.count()):
-            item = selected_layout.itemAt(i).widget().deleteLater()
-            selected_layout.removeItem(item)
-
-        self.ydata_collection_layout.removeItem(selected_layout)
-        del self.ydata_collection[row_idx[0] + 1]
+        self.yDataCollection.removeYDataEntry(sender)
         self.updatePlotDataXY()
 
     @pyqtSlot(int)
@@ -215,8 +213,8 @@ class ScatterView(QMainWindow):
 
         # Get current selected labels from all fields
         labels = []
-        for idx, el in enumerate(self.ydata_collection[1:]):
-            labels.append(el[1].currentText())
+        for idx, el in enumerate(self.yDataCollection.selVariableCollection):
+            labels.append(el.dropdown.currentText())
 
         xlabel = self.xdata_box.currentText()
         ylabels = labels
