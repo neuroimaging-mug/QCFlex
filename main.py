@@ -36,6 +36,12 @@ class QCMainWindow(QMainWindow):
         self.initMenuBarLoadActions()
         self.previous_saveas_path = None
 
+        # Set false to display the timer label!
+        self.labelTimeSpent.setHidden(True)
+
+        from logger import UncaughtHook
+        qt_exception_hook = UncaughtHook()
+
         with open('stylesheet.css', "r") as fh:
             self.setStyleSheet(fh.read())
 
