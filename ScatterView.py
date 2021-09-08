@@ -200,8 +200,10 @@ class ScatterView(QMainWindow):
 
         # Get current selected labels from all fields
         labels = []
+        colors = []
         for idx, el in enumerate(self.yDataCollection.selVariableCollection):
             labels.append(el.dropdown.currentText())
+            colors.append(el.currentColor)
 
         xlabel = self.yDataCollection.getXEntry().dropdown.currentText()
         ylabels = labels
@@ -213,8 +215,7 @@ class ScatterView(QMainWindow):
             self.c1.updatePlot(x_sel, y_sel, self.parent.current_index, xlabel=xlabel, ylabel=ylabels)
         else:
             self.c1.updatePlotMultiColumns(x_sel, y_sel, self.parent.current_index, xlabel=xlabel, ylabel=ylabels,
-                                           colors=['blue', 'darkorange', 'yellowgreen', 'forestgreen', 'red'])
-
+                                           colors=colors)
         self.updateAvailableColumns()
 
     def updatePlotData(self):

@@ -63,7 +63,6 @@ class MplCanvas(FigureCanvasQTAgg):
             S[selected_index] = self._marker_size_highlight
             self.axes.scatter(xdat, ydat[:,i], picker=True, pickradius=PICKERRADIUS, s=S, c=C)
         self.axes.set_xlabel(xlabel)
-        self.axes.set_ylabel(ylabel)
         self.figure.canvas.draw()
 
 
