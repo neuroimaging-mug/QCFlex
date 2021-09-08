@@ -78,9 +78,10 @@ class QCMainWindow(QMainWindow):
         self.actionHelp.triggered.connect(self.callAbout)
 
     def callAbout(self):
-        text = f"""<h3>QCFlex was developed by ... </h3>
-<br></br>
-Source can be found on GitHub: <a href='https://github.com/neuroimaging-mug/QCFlex'>QCFlex on GitHub</a>"""
+        text = f"""<h3>QCFlex: A flexible quality control tool <br> for large MRI cohorts</h3>
+This tool was developed by:
+<p>Stefan Eggenreich <br></br> Lukas Pirpamer <br></br> Stefan Ropele </p>
+The source is hosted on GitHub: <a style='color:white' href='https://github.com/neuroimaging-mug/QCFlex'>QCFlex on GitHub</a>"""
 
         msg = QMessageBox(self)
         msg.setIcon(QMessageBox.Information)
