@@ -15,15 +15,27 @@ import numpy as np
 from settings import SELECTION_COLOR
 
 class ScatterViewHandler(object):
-    def __init__(self):
+    def __init__(self, validColumns):
         self.layout = QVBoxLayout()
         self.selVariableCollection = []
         self.xVariable = None
+        self.validColumns = validColumns
+
+
+    def initVariableAssignment(self):
+        """Assign columns after first initialization!"""
+
+        # self.xVariable.updateAvailableVariables(self.getAvailableColumns())
 
     def getAvailableColors(self):
         """Retrieves the selected colors from all current ylabels"""
         selected_colors = [el.currentColor for el in self.selVariableCollection]
         return list(SELECTION_COLOR.keys() - selected_colors)
+
+    def getAvailableColumns(self):
+        if len(self.selVariableCollection) == 0:
+            return self.validColumns
+        return list(set(self.validColumns) - set([el.dropdown.currentText() for el in self.selVariableCollection]))
 
     def setNewColor(self):
         """Updates the color of a Ylabel"""
@@ -32,11 +44,14 @@ class ScatterViewHandler(object):
         new_entry = YData(*args, parent=self)
         self.selVariableCollection.append(new_entry)
         self.layout.addLayout(new_entry.hbox)
+        self.updateAvailableVariables()
+
 
     def addXEntry(self, *args, **kwargs):
         new_entry = XData(*args)
         self.xVariable = new_entry
         self.layout.addWidget(new_entry.dropdown)
+        self.updateAvailableVariables()
 
     def getXEntry(self):
         return self.xVariable
@@ -62,11 +77,14 @@ class ScatterViewHandler(object):
     def getAllVariableSelectors(self):
         return []
 
-    def updateAvailableVariables(self, available_columns, selectable_columns):
-        for el in self.selVariableCollection:
-            for rdx, (item, _) in enumerate(selectable_columns):
+    def updateAvailableVariables(self):
+        """Updated all selectable variables in each of the dropdown menus."""
+        available_columns = self.getAvailableColumns()
+        selectable_columns = self.validColumns
+
+        for el in self.selVariableCollection + [self.xVariable]:
+            for rdx, item in enumerate(selectable_columns):
                 if item not in available_columns:
-                    # print([box.itemText(i) for i in range(box.count())])
                     el.dropdown.view().setRowHidden(rdx, True)
                 else:
                     el.dropdown.view().setRowHidden(rdx, False)
@@ -100,6 +118,8 @@ class YData(object):
                                     border-radius: 50px;
                                     border: 1px solid white""")
         self.hbox.addWidget(self.btnColor)
+
+        self.dropdown.addItems(self.parent.validColumns)
 
         self.hbox.addWidget(self.dropdown)
         self.hbox.addWidget(self.btnAdd)

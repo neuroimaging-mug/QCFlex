@@ -52,10 +52,10 @@ class ScatterView(QMainWindow):
 
         self.valid_colums = self.evaluateValidColumns(self.df)
 
-        # Transform columns to be connected to QDropdownMenus
-        self.selectable_columns = []
-        for col in self.valid_colums:
-            self.selectable_columns.append([col, None])
+        # # Transform columns to be connected to QDropdownMenus
+        # self.selectable_columns = []
+        # for col in self.valid_colums:
+        #     self.selectable_columns.append([col, None])
 
         self.ydata_collection = []
 
@@ -63,11 +63,11 @@ class ScatterView(QMainWindow):
 
         xdata_box = QComboBox()
 
-        self.yDataCollection = ScatterViewHandler()
+        self.yDataCollection = ScatterViewHandler(self.valid_colums)
 
         xdata_box.currentTextChanged.connect(self.updatePlotDataXY)
         self.yDataCollection.addXEntry(xdata_layout, xdata_box)
-        self.yDataCollection.xVariable.updateAvailableVariables(self.getAvailableColumns())
+        self.yDataCollection.xVariable.updateAvailableVariables(self.valid_colums)
 
         layout.addLayout(self.yDataCollection.layout)
 
@@ -78,7 +78,7 @@ class ScatterView(QMainWindow):
             :return:
             """
             ydata_box_new = QComboBox()
-            ydata_box_new.addItems(self.getAvailableColumns())
+            # ydata_box_new.addItems(y.getAvailableColumns())
             ydata_box_new.currentTextChanged.connect(self.updatePlotDataXY)
             hbox = QHBoxLayout()
 
@@ -110,11 +110,12 @@ class ScatterView(QMainWindow):
         add.clicked.connect(addNewVariableSelector)
 
         ydata_box = QComboBox()
-        ydata_box.addItems(self.getAvailableColumns())
+        # ydata_box.addItems(self.yDataCollection.getAvailableColumns())
 
         self.yDataCollection.addYEntry(hbox, ydata_box, add, None)
         ydata_box.currentTextChanged.connect(self.updatePlotDataXY)
 
+        self.yDataCollection.initVariableAssignment()
         self.setCentralWidget(cw)
 
     def removeCurrentVariableSelector(self):
@@ -158,39 +159,10 @@ class ScatterView(QMainWindow):
     def updateAvailableColumns(self):
         sender = self.sender()
         if type(sender) == QComboBox:
-            selected_text = sender.currentText()
-
-            # Free current selection
-            for el in self.selectable_columns:
-                if sender in el:
-                    el[1] = None
-
-            # Assign to new selection
-            for el in self.selectable_columns:
-                if selected_text == el[0]:
-                    el[1] = sender
-
-            avail = self.getAvailableColumns()
-
             # Update available items in all other Dropdown Menus
-            self.yDataCollection.updateAvailableVariables(avail, self.selectable_columns)
-            # for idx, (_, box, _, _) in enumerate(self.ydata_collection):
-            #     for rdx, (item, _) in enumerate(self.selectable_columns):
-            #         if item not in avail:
-            #             # print([box.itemText(i) for i in range(box.count())])
-            #             box.view().setRowHidden(rdx, True)
-            #         else:
-            #             box.view().setRowHidden(rdx, False)
+            self.yDataCollection.updateAvailableVariables()
         else:
             print("WARNING: updateAvailableColumns - Wrong sender detected...")
-
-    def getAvailableColumns(self):
-        avail = []
-        for el in self.selectable_columns:
-            if el[1] == None:
-                avail.append(el[0])
-
-        return avail
 
     def updatePlotDataXY(self):
         """
