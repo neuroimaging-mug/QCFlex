@@ -60,28 +60,14 @@ class ScatterView(QMainWindow):
         self.ydata_collection = []
 
         self.xdata_box = QComboBox()
-        self.xdata_box.addItems(self.getAvailableColumns())
-
 
         self.yDataCollection = ScatterViewHandler()
 
-        layout.addWidget(self.xdata_box)
-        # self.ydata_collection.append((None, self.xdata_box, None, None))
-        self.yDataCollection.addEntry(None, self.xdata_box, None, None, axis="x")
-
-
-        self.hbox = QHBoxLayout()
-        layout.addLayout(self.hbox)
-
-        # self.ydata_collection_layout = QVBoxLayout()
+        self.xdata_box.currentTextChanged.connect(self.updatePlotDataXY)
+        self.yDataCollection.addXEntry(self.xdata_box)
+        self.yDataCollection.xVariable.updateAvailableVariables(self.getAvailableColumns())
 
         layout.addLayout(self.yDataCollection.layout)
-
-        self.ydata_box = QComboBox()
-        self.ydata_box.addItems(self.getAvailableColumns())
-
-        self.hbox.addWidget(self.ydata_box)
-        self.ydata_collection.append((None, self.ydata_box, None, None))
 
         def addNewVariableSelector():
             """
@@ -109,24 +95,28 @@ class ScatterView(QMainWindow):
             hbox.addWidget(ydata_box_new)
             hbox.addWidget(add)
             hbox.addWidget(remove)
-            self.yDataCollection.addEntry(hbox, ydata_box_new, add, remove)
+            ydata_box_new.currentTextChanged.connect(self.updatePlotDataXY)
+            self.yDataCollection.addYEntry(hbox, ydata_box_new, add, remove)
             # self.ydata_collection.append((hbox, ydata_box_new, add, remove))
             # self.ydata_collection_layout.addLayout(hbox)
+
+        hbox = QHBoxLayout()
 
         add = QPushButton()
         add.setFixedWidth(20)
         add.setIcon(QIcon(str(Path("files/plus-solid.svg"))))
         add.clicked.connect(addNewVariableSelector)
-        self.hbox.addWidget(add)
 
-        self.xdata_box.currentTextChanged.connect(self.updatePlotDataXY)
-        self.ydata_box.currentTextChanged.connect(self.updatePlotDataXY)
+        ydata_box = QComboBox()
+        ydata_box.addItems(self.getAvailableColumns())
+
+        self.yDataCollection.addYEntry(hbox, ydata_box, add, None)
+        ydata_box.currentTextChanged.connect(self.updatePlotDataXY)
 
         self.setCentralWidget(cw)
 
     def removeCurrentVariableSelector(self):
         sender = self.sender()
-        print(self.ydata_collection[1:])
 
         self.yDataCollection.removeYDataEntry(sender)
         self.updatePlotDataXY()
@@ -155,13 +145,7 @@ class ScatterView(QMainWindow):
         """
         available_columns = self.evaluateValidColumns(self.df)
 
-        selected_columns = []
-        # Get selected variables
-        for idx, row in enumerate(self.ydata_collection):
-            if idx == 0:
-                selected_columns.append(row.currentText())
-            else:
-                selected_columns.append(row[1])
+        selected_columns = self.yDataCollection.getSelectedVariables()
 
         for sel in selected_columns:
             if sel in available_columns:
@@ -187,13 +171,14 @@ class ScatterView(QMainWindow):
             avail = self.getAvailableColumns()
 
             # Update available items in all other Dropdown Menus
-            for idx, (_, box, _, _) in enumerate(self.ydata_collection):
-                for rdx, (item, _) in enumerate(self.selectable_columns):
-                    if item not in avail:
-                        # print([box.itemText(i) for i in range(box.count())])
-                        box.view().setRowHidden(rdx, True)
-                    else:
-                        box.view().setRowHidden(rdx, False)
+            self.yDataCollection.updateAvailableVariables(avail, self.selectable_columns)
+            # for idx, (_, box, _, _) in enumerate(self.ydata_collection):
+            #     for rdx, (item, _) in enumerate(self.selectable_columns):
+            #         if item not in avail:
+            #             # print([box.itemText(i) for i in range(box.count())])
+            #             box.view().setRowHidden(rdx, True)
+            #         else:
+            #             box.view().setRowHidden(rdx, False)
         else:
             print("WARNING: updateAvailableColumns - Wrong sender detected...")
 
