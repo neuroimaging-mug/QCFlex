@@ -8,9 +8,11 @@ Desc    :
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
-from PyQt5.QtCore import pyqtSignal, pyqtSlot
+from PyQt5.QtCore import pyqtSignal, pyqtSlot, QSize
 
 import numpy as np
+
+from settings import SELECTION_COLOR
 
 class ScatterViewHandler(object):
     def __init__(self):
@@ -18,8 +20,16 @@ class ScatterViewHandler(object):
         self.selVariableCollection = []
         self.xVariable = None
 
+    def getAvailableColors(self):
+        """Retrieves the selected colors from all current ylabels"""
+        selected_colors = [el.currentColor for el in self.selVariableCollection]
+        return list(SELECTION_COLOR.keys() - selected_colors)
+
+    def setNewColor(self):
+        """Updates the color of a Ylabel"""
+
     def addYEntry(self, *args, **kwargs):
-        new_entry = YData(*args)
+        new_entry = YData(*args, parent=self)
         self.selVariableCollection.append(new_entry)
         self.layout.addLayout(new_entry.hbox)
 
@@ -27,6 +37,9 @@ class ScatterViewHandler(object):
         new_entry = XData(*args)
         self.xVariable = new_entry
         self.layout.addWidget(new_entry.dropdown)
+
+    def getXEntry(self):
+        return self.xVariable
 
     def removeYDataEntry(self, reference):
         def searchEntry(reference, array):
@@ -58,7 +71,6 @@ class ScatterViewHandler(object):
                 else:
                     el.dropdown.view().setRowHidden(rdx, False)
 
-
 class YData(object):
     def __init__(self, hbox, dropdown, btnAdd, btnRemove, parent=None):
         self.hbox = hbox
@@ -66,34 +78,52 @@ class YData(object):
         self.btnAdd = btnAdd
         self.btnRemove = btnRemove
         self.parent = parent
+        self.btnColor = None
 
         self.insertElements()
 
     def insertElements(self):
+        """Adds all elements to the horizontal layout!"""
+
+
+        availableColors = self.parent.getAvailableColors()
+        if len(availableColors) > 0:
+            self.currentColor = availableColors[0]
+        else:
+            raise Warning("Too many yLabels selected for the defined color palette."
+                          "Define more compatible colors in the settings.py file!")
+
+        # define color button
+        self.btnColor = QPushButton("")
+        self.btnColor.setFixedSize(QSize(20, 20))
+        self.btnColor.setStyleSheet(f"""background-color: {self.currentColor};
+                                    border-radius: 50px;
+                                    border: 1px solid white""")
+        self.hbox.addWidget(self.btnColor)
+
         self.hbox.addWidget(self.dropdown)
         self.hbox.addWidget(self.btnAdd)
         if self.btnRemove is not None:
             self.hbox.addWidget(self.btnRemove)
 
+
+
     def removeEntries(self):
         self.dropdown.deleteLater()
         self.btnAdd.deleteLater()
         self.btnRemove.deleteLater()
+        self.btnColor.deleteLater()
 
 class XData(object):
-    def __init__(self, dropdown, parent=None):
+    def __init__(self, hbox, dropdown, parent=None):
+        self.hbox = hbox
         self.dropdown = dropdown
+        # self.color = color
 
-    # def insertElements(self):
+    def insertElements(self):
+        self.hbox.addWidget(self.dropdown)
+        # if self.color:
+        #     self.
 
     def updateAvailableVariables(self, availableColumns):
         self.dropdown.addItems(availableColumns)
-
-
-# class XData(object):
-#     def __init__(self):
-#
-
-
-
-    # def addEntry(self):

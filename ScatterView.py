@@ -59,12 +59,14 @@ class ScatterView(QMainWindow):
 
         self.ydata_collection = []
 
-        self.xdata_box = QComboBox()
+        xdata_layout = QHBoxLayout()
+
+        xdata_box = QComboBox()
 
         self.yDataCollection = ScatterViewHandler()
 
-        self.xdata_box.currentTextChanged.connect(self.updatePlotDataXY)
-        self.yDataCollection.addXEntry(self.xdata_box)
+        xdata_box.currentTextChanged.connect(self.updatePlotDataXY)
+        self.yDataCollection.addXEntry(xdata_layout, xdata_box)
         self.yDataCollection.xVariable.updateAvailableVariables(self.getAvailableColumns())
 
         layout.addLayout(self.yDataCollection.layout)
@@ -92,9 +94,9 @@ class ScatterView(QMainWindow):
             remove.setIcon(QIcon(str(Path("files/minus-solid.svg"))))
             remove.setFixedWidth(20)
             #
-            hbox.addWidget(ydata_box_new)
-            hbox.addWidget(add)
-            hbox.addWidget(remove)
+            # hbox.addWidget(ydata_box_new)
+            # hbox.addWidget(add)
+            # hbox.addWidget(remove)
             ydata_box_new.currentTextChanged.connect(self.updatePlotDataXY)
             self.yDataCollection.addYEntry(hbox, ydata_box_new, add, remove)
             # self.ydata_collection.append((hbox, ydata_box_new, add, remove))
@@ -201,7 +203,7 @@ class ScatterView(QMainWindow):
         for idx, el in enumerate(self.yDataCollection.selVariableCollection):
             labels.append(el.dropdown.currentText())
 
-        xlabel = self.xdata_box.currentText()
+        xlabel = self.yDataCollection.getXEntry().dropdown.currentText()
         ylabels = labels
 
         x_sel = self.df[xlabel].values
