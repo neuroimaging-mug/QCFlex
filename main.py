@@ -74,10 +74,17 @@ class QCMainWindow(QMainWindow):
         self.actionHelp.triggered.connect(self.callAbout)
 
     def callAbout(self):
+        #TODO: Add reference to qcflex.neuroimaging.at
+        #TODO: Add correct citation!
+
         text = f"""<h3>QCFlex: A flexible quality control tool <br> for large MRI cohorts</h3>
 This tool was developed by:
 <p>Stefan Eggenreich <br></br> Lukas Pirpamer <br></br> Stefan Ropele </p>
-The source is hosted on GitHub: <a style='color:white' href='https://github.com/neuroimaging-mug/QCFlex'>QCFlex on GitHub</a>"""
+The source is hosted on GitHub: <a style='color:white' href='https://github.com/neuroimaging-mug/QCFlex'>QCFlex on GitHub</a> 
+Presented on the 09.10.2021 at the ESMRMB congress (abstract-ID: 216)
+<br></>
+Please cite our tool if you use it for your work: 
+"""
 
         msg = QMessageBox(self)
         msg.setIcon(QMessageBox.Information)
