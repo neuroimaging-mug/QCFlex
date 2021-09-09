@@ -17,6 +17,5 @@ SELECTION_COLOR = {
     "orange": "#ffa500",
     "olive": "#808000",
     "blue": "#0000FF",
-    "red": "#FF0000",
     "green": "#008000",
 }
