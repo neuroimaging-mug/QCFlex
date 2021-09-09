@@ -280,6 +280,6 @@ class TableViewWindow(QMainWindow):
             self.tableSaveExceptionMessageBox(e)
 
     def saveTable(self, name='Test.csv'):
-        self.df.to_csv(name, index_label=None, sep=';')
+        self.df.to_csv(name, index=False, sep=';')
         self.saveBonusData()
         self.main_window.updateTimeLabel()
