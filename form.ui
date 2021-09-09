@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1000</width>
-    <height>823</height>
+    <height>824</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -378,7 +378,7 @@ p, li { white-space: pre-wrap; }
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
-     <string>About</string>
+     <string>Help</string>
     </property>
     <addaction name="actionHelp"/>
    </widget>
