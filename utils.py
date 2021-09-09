@@ -7,6 +7,7 @@ Desc    :
 """
 from pathlib import Path
 import pandas as pd
+from settings import REQUIRED_TABLE_COLUMNS
 
 def loadTableFile(fpath: Path):
     '''
@@ -30,9 +31,17 @@ def loadTableFile(fpath: Path):
         return None
 
 
+def evaluateTableHeader(header):
+    """Evaluate the table header if all required columns are defined!"""
+    for key in REQUIRED_TABLE_COLUMNS:
+        if key not in header:
+            return False
+    return True
+
 def evaluateProvidedTable(fname):
     out = loadTableFile(fname)
-    if isinstance(out, pd.DataFrame):
+
+    if isinstance(out, pd.DataFrame) and evaluateTableHeader(list(out.columns)):
         print("Building Table Window!")
         return True
     else:

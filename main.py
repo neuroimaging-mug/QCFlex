@@ -188,7 +188,7 @@ The source is hosted on GitHub: <a style='color:white' href='https://github.com/
 
             self.updateTimeLabel()
         else:
-            ExceptionHandler(text="An exception occured during loading the provided table file!")
+            ExceptionHandler(self, text=f"""An exception was raised during loading the provided table file... Are all required table columns defined?""")
 
     def updateCurrentImage(self):
         """
