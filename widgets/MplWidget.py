@@ -14,6 +14,7 @@ class MplCanvas(FigureCanvasQTAgg):
         self.fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = self.fig.add_subplot(111)
         self._color_highlight = np.array([255, 37, 0]) / 255
+        self.init = False
 
         def onpick(event):
             if event.mouseevent.dblclick:
@@ -50,6 +51,9 @@ class MplCanvas(FigureCanvasQTAgg):
         self.axes.set_ylabel(ylabel)
         self.figure.canvas.draw()
 
+        # Flag which signals the refresh function which update to call
+        self.init = True
+
     def updatePlotMultiColumns(self, xdat, ydat, selected_index, xlabel=None, ylabel=None, colors=None):
         self.axes.cla()
 
@@ -67,7 +71,11 @@ class MplCanvas(FigureCanvasQTAgg):
 
     def refreshPlot(self, selected_index):
         # retrive current data
-        xdat, ydat = zip(*self.axes.collections[0].get_offsets())
+        if len(self.axes.collections) > 0:
+            xdat, ydat = zip(*self.axes.collections[0].get_offsets())
+        else:
+            print("No data selected... Skipping!")
+            return
         self.axes.cla()
         C = [[0, 0, 1] for _ in range(len(xdat))]
         S = [MARKER_SIZE_DEFAULT for _ in range(len(xdat))]
