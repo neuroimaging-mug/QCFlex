@@ -12,32 +12,28 @@ import sys
 import tempfile
 from pathlib import Path
 
-import numpy as np
 from PIL import Image, ImageDraw
 from PyQt5 import uic
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, Qt, QTimer
-from PyQt5.QtWidgets import *
+from PyQt5.QtCore import pyqtSignal, Qt, QTimer
 from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
-from ScatterView import ScatterView
-import pandas as pd
-from settings import *
 from TableViewWindow import TableViewWindow
-
+from exceptionHandler import ExceptionHandler
+from settings import *
 from utils import evaluateProvidedTable
 
+
 class QCMainWindow(QMainWindow):
-
-    evaluateProvidedTable = pyqtSignal(Path)
-
     def __init__(self):
         super().__init__()
         uic.loadUi('form.ui', self)
         self.initMenuBarLoadActions()
+        self.initMenuBarAboutActions()
         self.previous_saveas_path = None
 
         # Set false to display the timer label!
-        self.labelTimeSpent.setHidden(True)
+        self.labelTimeSpent.setHidden(HIDE_TIMER)
 
         from logger import UncaughtHook
         qt_exception_hook = UncaughtHook()
@@ -52,7 +48,7 @@ class QCMainWindow(QMainWindow):
 
         geo = QGuiApplication.primaryScreen().geometry()
         print(geo.width(), geo.height())
-        self.position = ( ( geo.width() - self.window_width ) // 2 ,(geo.height() - self.window_height) // 2)
+        self.position = ((geo.width() - self.window_width) // 2, (geo.height() - self.window_height) // 2)
         # self.setGeometry((geo.width() - self.window_width) // 2, (geo.height() - self.window_height ) //2, self.window_width, self.window_height)
         self.setGeometry(*self.position, self.window_width, self.window_height)
         self.show()
@@ -124,14 +120,13 @@ The source is hosted on GitHub: <a style='color:white' href='https://github.com/
 
         if (len(filenames) == 0):
             print("nothing selected")
+            ExceptionHandler(self, text="No file was selected.")
             return
 
         self.testFile(filenames[0])
 
-
     def updateTimeLabel(self):
         import json
-        from shutil import copyfile
         appdata_path = Path("appdata")
         appdata_path.mkdir(parents=True, exist_ok=True)
         pfile = appdata_path / Path(".programdata.json")
@@ -147,7 +142,6 @@ The source is hosted on GitHub: <a style='color:white' href='https://github.com/
                         self.labelTimeSpent.setText(data_loaded['total_time_spent'])
             except:
                 print("Something went wrong when loading the appdata file!")
-
 
     def testFile(self, text=None):
         """
@@ -180,6 +174,7 @@ The source is hosted on GitHub: <a style='color:white' href='https://github.com/
             else:
                 self.table = TableViewWindow(fpath, self)
 
+            self.previous_saveas_path = None
             self.initButtonConnections()
 
             self.table.updateCurrentImage.connect(self.updateCurrentImage)
@@ -193,12 +188,7 @@ The source is hosted on GitHub: <a style='color:white' href='https://github.com/
 
             self.updateTimeLabel()
         else:
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Critical)
-            msg.setStandardButtons(QMessageBox.Retry | QMessageBox.Cancel)
-            msg.setWindowTitle("Error loading table")
-            msg.setText("An exception occured during loading the provided table file!")
-            msg.exec_()
+            ExceptionHandler(text="An exception occured during loading the provided table file!")
 
     def updateCurrentImage(self):
         """
@@ -217,39 +207,36 @@ The source is hosted on GitHub: <a style='color:white' href='https://github.com/
             img_w, img_h = 600, 150
             image = Image.new("RGBA", (img_w, img_h), (255, 255, 255))
             draw = ImageDraw.Draw(image)
-            # font = ImageFont.truetype("resources/HelveticaNeueLight.ttf", fontsize)
 
             text = f"{fpath} was not found!"
             w, h = draw.textsize(text)
 
             draw.text(((img_w - w) // 2, (img_h - h) // 2), text, (255, 0, 0))
-            # img_resized = image.resize((188, 45), Image.ANTIALIAS)
 
             tmp_image_path = tmpdir / Path(str(datetime.datetime.now().timestamp()) + '.png')
             image.save(tmp_image_path)
 
             self.imageView.setImage(tmp_image_path)
-            
+
         if self.current_data['QC'] != 'nan':
             self.updateComment.setEnabled(True)
-            else:
-                self.updateComment.setEnabled(False)
+        else:
+            self.updateComment.setEnabled(False)
 
-            # Update stylesheet of buttons to represent previous selections
+        # Update stylesheet of buttons to represent previous selections
+        self.passBtn.setStyleSheet(BTN_DEFAULT_STYLESHEET)
+        self.failBtn.setStyleSheet(BTN_DEFAULT_STYLESHEET)
+
+        if self.current_data['QC'] == 'PASS':
+            self.passBtn.setStyleSheet(BTN_PASS_STYLESHEET)
+        elif self.current_data['QC'] == 'FAIL':
+            self.failBtn.setStyleSheet(BTN_FAIL_STYLESHEET)
+        else:
             self.passBtn.setStyleSheet(BTN_DEFAULT_STYLESHEET)
             self.failBtn.setStyleSheet(BTN_DEFAULT_STYLESHEET)
 
-            if self.current_data['QC'] == 'PASS':
-                self.passBtn.setStyleSheet(BTN_PASS_STYLESHEET)
-            elif self.current_data['QC'] == 'FAIL':
-                self.failBtn.setStyleSheet(BTN_FAIL_STYLESHEET)
-            else:
-                self.passBtn.setStyleSheet(BTN_DEFAULT_STYLESHEET)
-                self.failBtn.setStyleSheet(BTN_DEFAULT_STYLESHEET)
-
         if self.current_data['comment'] != '':
             self.commentBoxEdit.document().setPlainText(self.current_data['comment'])
-
 
     def clickedPassFail(self, ):
         """
@@ -311,9 +298,6 @@ The source is hosted on GitHub: <a style='color:white' href='https://github.com/
         :return:
         """
         self.activeIdLabel.setText(id)
-
-
-
 
 
 if __name__ == "__main__":
