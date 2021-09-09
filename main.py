@@ -49,7 +49,6 @@ class QCMainWindow(QMainWindow):
         geo = QGuiApplication.primaryScreen().geometry()
         print(geo.width(), geo.height())
         self.position = ((geo.width() - self.window_width) // 2, (geo.height() - self.window_height) // 2)
-        # self.setGeometry((geo.width() - self.window_width) // 2, (geo.height() - self.window_height ) //2, self.window_width, self.window_height)
         self.setGeometry(*self.position, self.window_width, self.window_height)
         self.show()
 
@@ -156,11 +155,6 @@ Please cite our tool if you use it for your work:
         :param text:
         :return:
         """
-        # if hasattr(self, 'table'): # TODO: LP:20210829 funktioniert das? Es blockiert das Laden irgend einer neuen Datei. Man muss schauen, ob der gleiche Dateipfad geladen wurde.
-        #     # print("Table already loaded!") # TODO: LP:20210829: anstatt print msgboxes verwenden (sofern es das in python gibt)
-        #     raise Warning("Table already loaded!")
-        #     return
-
         if text == None:
             fpath = self.loadFilePath.text()
         else:
