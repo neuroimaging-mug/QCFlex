@@ -35,7 +35,7 @@ class QCMainWindow(QMainWindow):
         # Set false to display the timer label!
         self.labelTimeSpent.setHidden(HIDE_TIMER)
 
-        from logger import UncaughtHook
+        from uncaughtExceptionHandler import UncaughtHook
         qt_exception_hook = UncaughtHook()
 
         with open('stylesheet.css', "r") as fh:
