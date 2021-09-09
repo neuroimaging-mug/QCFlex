@@ -253,13 +253,14 @@ Please cite our tool if you use it for your work:
             self.passBtn.setStyleSheet(BTN_DEFAULT_STYLESHEET)
 
         # Visualize selection for DELAY time before triggering
+        self.previous_sender = self.sender()
+
         self.timer = QTimer()
         self.timer.setSingleShot(True)
-        self.timer.timeout.connect(self.sendUpdate)
+        self.timer.timeout.connect(lambda: self.sendUpdate(self.sender))
         self.timer.start(DELAY)
 
-        self.previous_sender = self.sender()
-        self.sendUpdate(self.sender)
+
 
     def sendUpdate(self, source=None):
         """

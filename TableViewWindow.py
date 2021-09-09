@@ -193,7 +193,7 @@ class TableViewWindow(QMainWindow):
             self.updateCurrentImage.emit(True)
 
         self.saveTable()
-        self.update() #
+        self.update()
 
     def tableSaveExceptionMessageBox(self, error):
         msg = QMessageBox()
