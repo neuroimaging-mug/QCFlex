@@ -4,8 +4,8 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 
 from matplotlib.figure import Figure
 
+from settings import PICKERRADIUS, MARKER_SIZE_DEFAULT, MARKER_SIZE_HIGHLIGHT
 
-PICKERRADIUS = 1
 
 class MplCanvas(FigureCanvasQTAgg):
     transmit_data_index = pyqtSignal(int)
@@ -14,9 +14,6 @@ class MplCanvas(FigureCanvasQTAgg):
         self.fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = self.fig.add_subplot(111)
         self._color_highlight = np.array([255, 37, 0]) / 255
-
-        self._marker_size_default = 12
-        self._marker_size_highlight = 20
 
         def onpick(event):
             if event.mouseevent.dblclick:
@@ -44,10 +41,11 @@ class MplCanvas(FigureCanvasQTAgg):
     def updatePlot(self, xdat, ydat, selected_index, xlabel=None, ylabel=None):
         self.axes.cla()
         C = [[0, 0, 1] for _ in range(len(xdat))]
-        S = [self._marker_size_default for _ in range(len(xdat))]
+        S = [MARKER_SIZE_DEFAULT for _ in range(len(xdat))]
         C[selected_index] = self._color_highlight
-        S[selected_index] = self._marker_size_highlight
+        S[selected_index] = MARKER_SIZE_HIGHLIGHT
         self.axes.scatter(xdat, ydat, picker=True, pickradius=PICKERRADIUS, s=S, c=C)
+        self.axes.scatter(xdat[selected_index], ydat[selected_index], s=S[selected_index], c=C[selected_index])
         self.axes.set_xlabel(xlabel)
         self.axes.set_ylabel(ylabel)
         self.figure.canvas.draw()
@@ -58,10 +56,11 @@ class MplCanvas(FigureCanvasQTAgg):
         num_cols = ydat.shape[1]
         for i in range(num_cols):
             C = [ colors[i] for _ in range(len(xdat))]
-            S = [self._marker_size_default for _ in range(len(xdat))]
+            S = [MARKER_SIZE_DEFAULT for _ in range(len(xdat))]
             C[selected_index] = self._color_highlight
-            S[selected_index] = self._marker_size_highlight
+            S[selected_index] = MARKER_SIZE_HIGHLIGHT
             self.axes.scatter(xdat, ydat[:,i], picker=True, pickradius=PICKERRADIUS, s=S, c=C)
+            self.axes.scatter(xdat[selected_index], ydat[selected_index,i], s=S[selected_index], c=C[selected_index])
         self.axes.set_xlabel(xlabel)
         self.figure.canvas.draw()
 
@@ -71,9 +70,9 @@ class MplCanvas(FigureCanvasQTAgg):
         xdat, ydat = zip(*self.axes.collections[0].get_offsets())
         self.axes.cla()
         C = [[0, 0, 1] for _ in range(len(xdat))]
-        S = [self._marker_size_default for _ in range(len(xdat))]
+        S = [MARKER_SIZE_DEFAULT for _ in range(len(xdat))]
 
         C[selected_index] = self._color_highlight
-        S[selected_index] = self._marker_size_highlight
+        S[selected_index] = MARKER_SIZE_HIGHLIGHT
         self.axes.scatter(xdat, ydat, picker=True, pickradius=PICKERRADIUS, s=S, c=C)
         self.figure.canvas.draw()

@@ -19,3 +19,9 @@ SELECTION_COLOR = {
     "blue": "#0000FF",
     "green": "#008000",
 }
+
+# Settings for the MPL Widget
+PICKERRADIUS = 1
+
+MARKER_SIZE_DEFAULT = 12
+MARKER_SIZE_HIGHLIGHT = 30

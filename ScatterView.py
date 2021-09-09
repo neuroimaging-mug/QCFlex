@@ -32,7 +32,6 @@ class ScatterView(QMainWindow):
 
     def __init__(self, parent=None):
         QMainWindow.__init__(self)
-        self.setWindowTitle("application main window")
         self.parent = parent
 
         cw = QWidget()
