@@ -20,11 +20,11 @@ def loadTableFile(fpath: Path):
         filepath = fpath
         df = pd.read_csv(filepath, sep=';', decimal=',', header=0)
 
-        if "PatientID" not in df.columns.values:
-            # If PatientID is not found in headers, select the 1th row as Patient Identifier!
+        if "ID" not in df.columns.values:
+            # If ID is not found in headers, select the 1th row as Patient Identifier!
             new_header = list(df.columns.values)
-            new_header[0] = "PatientID"
-            df.columns = new_header
+            #new_header[0] = "PatientID"
+            #df.columns = new_header
         return df
 
     except ValueError:
