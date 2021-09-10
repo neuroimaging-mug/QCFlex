@@ -1,7 +1,7 @@
 """
 Definition of settings in the GUI
 """
-import matplotlib.colors as mpl
+from collections import OrderedDict
 
 QC_STATUS_FAIL = 0
 QC_STATUS_PASS = 1
@@ -11,14 +11,14 @@ BTN_FAIL_STYLESHEET = "color: white; background-color: red;"
 DELAY = 100  # msec to wait after pass/fail was clicked
 REQUIRED_TABLE_COLUMNS = ['PatientID', 'imgpath', 'QC', 'comment']
 HIDE_TIMER = True  # Hides the "time spent" timer!
-SELECTION_COLOR = {
+SELECTION_COLOR = OrderedDict({
+    "blue": "#0000FF",
     "coral": "#ff7f50",
     "navy": "#000080",
     "orange": "#ffa500",
     "olive": "#808000",
-    "blue": "#0000FF",
     "green": "#008000",
-}
+})
 
 # Settings for the MPL Widget
 PICKERRADIUS = 1

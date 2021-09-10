@@ -24,13 +24,16 @@ class ScatterViewHandler(object):
 
     def initVariableAssignment(self):
         """Assign columns after first initialization!"""
-
         # self.xVariable.updateAvailableVariables(self.getAvailableColumns())
 
     def getAvailableColors(self):
         """Retrieves the selected colors from all current ylabels"""
         selected_colors = [el.currentColor for el in self.selVariableCollection]
-        return list(SELECTION_COLOR.keys() - selected_colors)
+        available_colors = []
+        for el in SELECTION_COLOR.keys():
+            if el not in selected_colors:
+                available_colors.append(el)
+        return available_colors #list(SELECTION_COLOR.keys() - selected_colors)
 
     def getAvailableColumns(self):
         if len(self.selVariableCollection) == 0:
