@@ -20,11 +20,11 @@ class ScatterViewHandler(object):
         self.selVariableCollection = []
         self.xVariable = None
         self.validColumns = validColumns
-
+        self.initialized = False
 
     def initVariableAssignment(self):
         """Assign columns after first initialization!"""
-        # self.xVariable.updateAvailableVariables(self.getAvailableColumns())
+        # self.xVariable.updateAvailableVariables(self.getAvailableColumns()
 
     def getAvailableColors(self):
         """Retrieves the selected colors from all current ylabels"""
@@ -123,6 +123,9 @@ class YData(object):
         self.hbox.addWidget(self.btnColor)
 
         self.dropdown.addItems(self.parent.validColumns)
+        if not self.parent.initialized:
+            self.dropdown.setCurrentIndex(1)
+            self.parent.initialized = True
 
         self.hbox.addWidget(self.dropdown)
         self.hbox.addWidget(self.btnAdd)
@@ -150,3 +153,4 @@ class XData(object):
 
     def updateAvailableVariables(self, availableColumns):
         self.dropdown.addItems(availableColumns)
+        # self.dropdown.setCurrentIndex()
