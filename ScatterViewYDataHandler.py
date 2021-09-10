@@ -128,10 +128,10 @@ class YData(object):
             self.parent.initialized = True
 
         self.hbox.addWidget(self.dropdown)
-        self.hbox.addWidget(self.btnAdd)
         if self.btnRemove is not None:
             self.hbox.addWidget(self.btnRemove)
 
+        self.hbox.addWidget(self.btnAdd)
 
 
     def removeEntries(self):

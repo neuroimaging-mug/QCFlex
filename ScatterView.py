@@ -100,6 +100,7 @@ class ScatterView(QMainWindow):
             self.yDataCollection.addYEntry(hbox, ydata_box_new, add, remove)
             # self.ydata_collection.append((hbox, ydata_box_new, add, remove))
             # self.ydata_collection_layout.addLayout(hbox)
+            self.updatePlotDataXY()
 
         hbox = QHBoxLayout()
 
@@ -116,6 +117,7 @@ class ScatterView(QMainWindow):
 
         self.yDataCollection.initVariableAssignment()
         self.setCentralWidget(cw)
+        self.updatePlotDataXY()
 
     def removeCurrentVariableSelector(self):
         sender = self.sender()

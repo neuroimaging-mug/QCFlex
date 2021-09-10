@@ -238,6 +238,7 @@ Please cite our tool if you use it for your work:
 
         if self.current_data['comment'] != '':
             self.commentBoxEdit.document().setPlainText(self.current_data['comment'])
+        self.setLoadedId(str(self.current_data["ID"]))
 
     def clickedPassFail(self, ):
         """
@@ -300,7 +301,6 @@ Please cite our tool if you use it for your work:
         :return:
         """
         self.activeIdLabel.setText(id)
-
 
 if __name__ == "__main__":
     app = QApplication([])
