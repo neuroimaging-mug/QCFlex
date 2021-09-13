@@ -31,8 +31,6 @@ In order to quickly setup a development environment, install venv from an instal
 ### Download latest release:
 [for Windows](https://github.com/neuroimaging-mug/QCFlex//releases/latest)
 
-
-![grafik](https://img.shields.io/badge/QC--Flex-get%20latest-blue?query=<https://github.com/neuroimaging-mug/QCFlex/releases/latest>)
   
 ## Requirements to run the source 
 Install virtualenv from pip
