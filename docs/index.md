@@ -32,7 +32,7 @@ In order to quickly setup a development environment, install venv from an instal
 [for Windows](https://github.com/neuroimaging-mug/QCFlex//releases/latest)
 
   
-## Requirements to run the source 
+## For developers
 Install virtualenv from pip
 ```
 >  python3 -m venv <_ENVIRONMENT_NAME_>
