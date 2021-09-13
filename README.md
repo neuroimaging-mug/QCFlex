@@ -10,7 +10,7 @@ DOI: TBA
 If you find the provided tool useful for your work, please cite:<br>
 Eggenreich S., "QCFlex: A flexible quality control tool for large MRI cohorts", ESMRMB 38th Annual Scientific Meeting, 7-9 October 2021
 
-##Purpose of the software: 
+## Purpose of the software: 
 The accurate segmentation of brain tissue plays an important role in neuroscience for several purposes. The assessment of global and regional tissue labels, for example, has become a crucial application in several neurodegenerative diseases1,2 and also in normal ageing3, to study subject specific volumetric changes or to perform regional quantitative analyses. Although advanced brain segmentation tools, such as FreeSurfer4, have become more robust, segmentation errors still might occur. Therefore, manual quality assurance is still indispensable, which however becomes difficult and time consuming at a larger scale. Here, we present a tool for fast, explorative and interactive quality assessment optimally suited for larger cohorts, combining the visualization of a segmentation output along with the numeric outcome of the resulting dataset.
 
 ## Methods 
@@ -28,9 +28,12 @@ This project was tested with python version 3.9.5, with the requirements being d
 In order to quickly setup a development environment, install venv from an installed version of Python 3.9.5 with 
 
 ## Try it out!
-# Download latest release:
-for Windows
+### Download latest release:
+[for Windows](https://github.com/neuroimaging-mug/QCFlex//releases/latest)
 
+
+![grafik](https://img.shields.io/badge/QC--Flex-get%20latest-blue?query=<https://github.com/neuroimaging-mug/QCFlex/releases/latest>)
+  
 ## Requirements to run the source 
 Install virtualenv from pip
 >  python3 -m venv <_ENVIRONMENT_NAME_>
