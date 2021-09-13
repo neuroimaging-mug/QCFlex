@@ -47,7 +47,7 @@ class TableViewWindow(QMainWindow):
         main_window_width = int(sw * 0.6)
         main_window_height = int(sh * 1)
         scatter_window_width = int(sw * 0.4)
-        scatter_window_height = int(sh * 0.5)
+        scatter_window_height = int(sh * 0.55)
         table_window_width = int(sw * 0.4)
         table_window_height = sh - scatter_window_height
 
@@ -57,7 +57,7 @@ class TableViewWindow(QMainWindow):
 
         # Setting table view geometry
         position = (0, scatter_window_height)
-        self.setGeometry(*position, scatter_window_width, scatter_window_height)
+        self.setGeometry(*position, table_window_width, table_window_height)
 
         ## Create Scatter View window
         self.scatter = ScatterView(self)
@@ -66,7 +66,7 @@ class TableViewWindow(QMainWindow):
 
         # Setting scatter view geometry
         position = (0, v_offset)
-        self.scatter.setGeometry(*position, table_window_width, table_window_height- v_offset * 2)
+        self.scatter.setGeometry(*position, scatter_window_width, scatter_window_height- v_offset * 2)
 
     def updateTableData(self, fpath):
         """Updates the table data when the table object already exists!"""

@@ -81,7 +81,7 @@ class QCImageViewer(QGraphicsView):
         if self.empty:
             self.fitInView()
 
-        self.setLoadedId.emit(str(url))
+        #self.setLoadedId.emit(str(url))
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MidButton:

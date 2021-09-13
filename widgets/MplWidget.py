@@ -64,7 +64,9 @@ class MplCanvas(FigureCanvasQTAgg):
             C[selected_index] = self._color_highlight
             S[selected_index] = MARKER_SIZE_HIGHLIGHT
             self.axes.scatter(xdat, ydat[:,i], picker=True, pickradius=PICKERRADIUS, s=S, c=C)
-            self.axes.scatter(xdat[selected_index], ydat[selected_index,i], s=S[selected_index], c=C[selected_index])
+
+        for i in range(num_cols):
+            self.axes.scatter(xdat[selected_index], ydat[selected_index, i], s=S[selected_index], c=C[selected_index])
         self.axes.set_xlabel(xlabel)
         self.figure.canvas.draw()
 
@@ -83,4 +85,5 @@ class MplCanvas(FigureCanvasQTAgg):
         C[selected_index] = self._color_highlight
         S[selected_index] = MARKER_SIZE_HIGHLIGHT
         self.axes.scatter(xdat, ydat, picker=True, pickradius=PICKERRADIUS, s=S, c=C)
+        self.axes.scatter(xdat[selected_index], ydat[selected_index], s=S[selected_index], c=C[selected_index])
         self.figure.canvas.draw()
