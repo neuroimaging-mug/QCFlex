@@ -18,6 +18,9 @@ import os
 from widgets.QCPandasTableWidget import *
 from widgets.QCTableViewWidget import QCTableView
 
+from exceptionHandler import ExceptionHandler
+
+
 from datetime import datetime
 import logging as lg
 
@@ -68,6 +71,9 @@ class TableViewWindow(QMainWindow):
         position = (0, v_offset)
         self.scatter.setGeometry(*position, scatter_window_width, scatter_window_height- v_offset * 2)
 
+        self.updateWindowTitle()
+
+
     def updateTableData(self, fpath):
         """Updates the table data when the table object already exists!"""
         lg.info("Updating table data.")
@@ -80,6 +86,11 @@ class TableViewWindow(QMainWindow):
         self.model = PandasTableModel(self.df)
         self.data.setModel(self.model)
         self.data.selectRow(self.current_index)
+        self.updateWindowTitle()
+
+
+    def updateWindowTitle(self):
+        self.setWindowTitle(Path(self.table_filename).name)
 
     def getNextId(self):
         if (self.current_index + 1) < len(self.df):
@@ -273,11 +284,15 @@ class TableViewWindow(QMainWindow):
 
     def tableSaveAsEvent(self):
         name = QFileDialog.getSaveFileName(self, 'SaveFile', filter="CSV files (*.csv)")
-        try:
-            self.saveTable(name[0])
-            self.main_window.previous_saveas_path = name[0]
-        except PermissionError as e:
-            self.tableSaveExceptionMessageBox(e)
+        if name[0] is not "":
+            try:
+                self.saveTable(name[0])
+                self.main_window.previous_saveas_path = name[0]
+            except PermissionError as e:
+                self.tableSaveExceptionMessageBox(e)
+        else:
+            ExceptionHandler(self, "No output file provided!")
+
 
     def saveTable(self, name='Test.csv'):
         self.df.to_csv(name, index=False, sep=';')
