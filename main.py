@@ -64,10 +64,17 @@ class QCMainWindow(QMainWindow):
         Connects buttons from the menu bar related to saving
         :return:
         """
-        self.actionSave.triggered.connect(self.table.tableSaveEvent)
+        self.actionSave.triggered.connect(self.callSaveTable)
         self.actionSave.setEnabled(True)
-        self.actionSave_As.triggered.connect(self.table.tableSaveAsEvent)
+        self.actionSave_As.triggered.connect(self.callSaveTableAs)
         self.actionSave_As.setEnabled(True)
+
+    def callSaveTable(self):
+        self.table.tableSaveEvent()
+
+    def callSaveTableAs(self):
+        self.table.tableSaveAsEvent()
+
 
     def initMenuBarAboutActions(self):
         self.actionHelp.triggered.connect(self.callAbout)
