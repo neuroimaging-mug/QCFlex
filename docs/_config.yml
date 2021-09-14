@@ -4,4 +4,4 @@ description: QC-Flex is qulity check framework with flexible application. It can
 google_analytics:
 theme: jekyll-theme-minimal
 include: 
-  - docs/qcFlex.png
+  - "/docs/qcFlex.png"
