@@ -50,7 +50,7 @@ In order to distribute this project as an executable, run in the root folder of 
 
 Avoid running the build process in an Anaconda environment to keep the package size as small as possible!
 
-![Figure 1](https://user-images.githubusercontent.com/67055436/133291623-c0c83ce5-324e-44d3-865d-1ba6ac5a2e39.png)
+![Figure 1](https://user-images.githubusercontent.com/67055436/133291786-8d47e015-f34d-4d1d-a537-b347beb3c5c3.png)
 
 ## References
 1.    Popescu, V. et al. Grey Matter Atrophy in Multiple Sclerosis: Clinical Interpretation Depends on Choice of Analysis Method. PLoS One 11, e0143942 (2016).
