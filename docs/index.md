@@ -29,7 +29,7 @@ In order to quickly setup a development environment, install venv from an instal
 
 ## Try it out!
 ### Download latest release:
-[for Windows](https://github.com/neuroimaging-mug/QCFlex//releases/latest)
+[for Windows](https://github.com/neuroimaging-mug/QCFlex/releases/latest/download/QCFlex.v2.0_win.zip)
 
   
 ## For developers
