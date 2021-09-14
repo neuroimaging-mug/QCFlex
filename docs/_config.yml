@@ -5,7 +5,7 @@ relative_links:
   enabled: true
   collections: true
 include:
-  - /docs/qcFlex.png
+  - qcFlex.png
 
 
 logo: "/docs/qcFlex.png"
