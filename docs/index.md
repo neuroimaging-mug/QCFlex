@@ -67,7 +67,7 @@ Avoid running the build process in an Anaconda environment to keep the package s
 4.    FreeSurfer. Neuroimage 62, 774–781 (2012).
 
 ## Authors
-S. Eggenreich, S. Ropele, L. Pirpamer
+S. Eggenreich, S. Ropele, L. Pirpamer<br>
 *[Neuroimaging Research Unit](http://www.neuroimaging.at) - Medical University of Graz, Department of Neurology, Graz, Austria;* <br>
 
 
