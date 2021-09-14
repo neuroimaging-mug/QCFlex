@@ -1,8 +1,4 @@
 title: QC-Flex
-logo: "/docs/qcFlex.png"
-description: QC-Flex is qulity check framework with flexible application. It can be used for all numeric datasets, which provide a 2D QC image for each entry (subject).
-google_analytics:
-theme: jekyll-theme-minimal
 plugins:
   - jekyll-relative-links
 relative_links:
@@ -10,3 +6,9 @@ relative_links:
   collections: true
 include:
   - /docs/qcFlex.png
+
+
+logo: "/docs/qcFlex.png"
+description: QC-Flex is qulity check framework with flexible application. It can be used for all numeric datasets, which provide a 2D QC image for each entry (subject).
+google_analytics:
+theme: jekyll-theme-minimal
