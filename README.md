@@ -3,9 +3,9 @@
 ---
 This work will be presented at the **38rd annual (online) meeting of the ESMRMB 2021** 7-9 October 2021 <br>
 
-Presentation number: TBA <br>
-Abstract ID: 216
-DOI: TBA
+Presentation number: S6.O6 <br>
+Abstract ID: 216 <br>
+DOI: [https://doi.org/10.1007/s10334-021-00947-8](https://doi.org/10.1007/s10334-021-00947-8)
 
 If you find the provided tool useful for your work, please cite:<br>
 Eggenreich S., "QCFlex: A flexible quality control tool for large MRI cohorts", ESMRMB 38th Annual Scientific Meeting, 7-9 October 2021
