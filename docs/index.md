@@ -1,7 +1,7 @@
 # QCFlex: A flexible quality control tool for large MRI cohorts
 
 ---
-This work will be presented at the **38rd annual (online) meeting of the ESMRMB 2021** 7-9 October 2021 <br>
+This work will be presented at the **38rd annual (online) meeting of the ESMRMB 2021** 6-9 October 2021 <br>
 
 Presentation number: TBA <br>
 Abstract ID: 216
@@ -29,7 +29,7 @@ In order to quickly setup a development environment, install venv from an instal
 
 ## Try it out!
 ### Download latest release:
-[for Windows](https://github.com/neuroimaging-mug/QCFlex//releases/latest)
+[for Windows](https://github.com/neuroimaging-mug/QCFlex/releases/latest/download/QCFlex.v2.0_win.zip)
 
   
 ## For developers
@@ -67,7 +67,7 @@ Avoid running the build process in an Anaconda environment to keep the package s
 4.    FreeSurfer. Neuroimage 62, 774–781 (2012).
 
 ## Authors
-S. Eggenreich, S. Ropele, L. Pirpamer
+S. Eggenreich, S. Ropele, L. Pirpamer<br>
 *[Neuroimaging Research Unit](http://www.neuroimaging.at) - Medical University of Graz, Department of Neurology, Graz, Austria;* <br>
 
 

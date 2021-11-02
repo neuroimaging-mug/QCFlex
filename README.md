@@ -3,9 +3,9 @@
 ---
 This work will be presented at the **38rd annual (online) meeting of the ESMRMB 2021** 7-9 October 2021 <br>
 
-Presentation number: TBA <br>
-Abstract ID: 216
-DOI: TBA
+Presentation number: S6.O6 <br>
+Abstract ID: 216 <br>
+DOI: [https://doi.org/10.1007/s10334-021-00947-8](https://doi.org/10.1007/s10334-021-00947-8)
 
 If you find the provided tool useful for your work, please cite:<br>
 Eggenreich S., "QCFlex: A flexible quality control tool for large MRI cohorts", ESMRMB 38th Annual Scientific Meeting, 7-9 October 2021
@@ -50,7 +50,7 @@ In order to distribute this project as an executable, run in the root folder of 
 
 Avoid running the build process in an Anaconda environment to keep the package size as small as possible!
 
-![grafik](https://user-images.githubusercontent.com/67055436/115269796-f45fe600-a13b-11eb-8222-ce6f6709102a.png)
+![Figure 1](https://user-images.githubusercontent.com/67055436/133291786-8d47e015-f34d-4d1d-a537-b347beb3c5c3.png)
 
 ## References
 1.    Popescu, V. et al. Grey Matter Atrophy in Multiple Sclerosis: Clinical Interpretation Depends on Choice of Analysis Method. PLoS One 11, e0143942 (2016).
