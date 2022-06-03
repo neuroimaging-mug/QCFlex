@@ -1,6 +1,6 @@
 altgraph==0.17
 auto-py-to-exe==2.8.0
-bottle==0.12.19
+bottle==0.12.20
 bottle-websocket==0.2.9
 cffi==1.14.5
 cx-Freeze==6.1
